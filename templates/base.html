@@ -3,7 +3,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Bootstrap -->
@@ -15,86 +14,55 @@
     <!-- Your CSS -->
     <link href="{% static 'home.css' %}" rel="stylesheet">
 
-    <title>Home Page</title>
+    <title>Car Lelo</title>
 </head>
 
 <body>
-<div class="container">
 
-  <!-- ===== HEADER ===== -->
-  <header class="home-header py-3">
-    <div class="row flex-nowrap justify-content-between align-items-center">
+<!-- ===== NAVBAR ===== -->
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
 
-      <div class="col-4 pt-1">
-        <a class="home-header-logo text-dark" href="/">Car Lelo</a>
-      </div>
+    <!-- Logo -->
+    <a class="navbar-brand home-header-logo" href="/">Car Lelo</a>
 
-      <div class="col-4 d-flex justify-content-end align-items-center">
-        <form action="" method="GET" class="w-100">
-          <div class="input-group">
-            <input class="form-control" type="text" name="keyword"
-                   placeholder="Search cars...">
+    <!-- Search Bar (CENTER) -->
+    <form class="form-inline mx-auto w-50" action="{% url 'home' %}" method="GET">
+        <div class="input-group w-100">
+            <input class="form-control" type="text" name="keyword" placeholder="Search cars...">
             <div class="input-group-append">
-              <button class="btn btn-warning" type="submit">Go!</button>
+                <button class="btn btn-warning" type="submit">Go!</button>
             </div>
-          </div>
-        </form>
-      </div>
-
-      <div class="col-4 d-flex justify-content-end align-items-center">
-        {% if not user.is_authenticated %}
-          <a class="btn btn-sm btn-warning" href="#">Login</a>&nbsp;
-          <a class="btn btn-sm btn-outline-secondary" href="#">Register</a>
-        {% else %}
-          <a class="btn btn-sm btn-primary" href="#">Dashboard</a>&emsp;
-          <a class="btn btn-sm btn-warning" href="#">Logout</a>
-        {% endif %}
-      </div>
-
-    </div>
-  </header>
-
-
-  <!-- ===== HERO SECTION ===== -->
-  <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark mt-3">
-    <div class="col-md-6 px-0">
-      <h1 class="display-4">Find Your Perfect Car 🚗</h1>
-      <p class="lead my-3">Buy and sell cars easily with our Django powered platform.</p>
-    </div>
-  </div>
-
-
-  <!-- ===== MAIN CONTENT BLOCK ===== -->
-  {% block content %}
-  <!-- Example Section -->
-  <div class="home-section">
-    <h2 class="section-title">Latest Listings</h2>
-    <p class="section-meta">Browse recently added cars</p>
-
-    <div class="row">
-      <!-- Car Card Example -->
-      <div class="col-md-4">
-        <div class="card mb-4 shadow-sm">
-          <div class="h-250 bg-secondary"></div>
-          <div class="card-body">
-            <h5>Car Model</h5>
-            <p>Short description here.</p>
-          </div>
         </div>
-      </div>
+    </form>
+
+    <!-- Auth Buttons -->
+    <div>
+        {% if not user.is_authenticated %}
+            <a class="btn btn-sm btn-warning" href="{% url 'login' %}">Login</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'register' %}">Register</a>
+        {% else %}
+            <a class="btn btn-sm btn-primary" href="#">Dashboard</a>
+            <a class="btn btn-sm btn-warning" href="{% url 'logout' %}">Logout</a>
+        {% endif %}
     </div>
-  </div>
-  {% endblock %}
 
-  <!-- ===== FOOTER ===== -->
-  <footer class="car-footer">
-    <p>Django Car Platform built with ❤ by
-      <a href="https://www.linkedin.com/in/om-prakash-bisoi-08438b321" target="_blank">
-        Om Prakash Bisoi
-      </a>
-    </p>
-  </footer>
+</nav>
 
+
+<!-- ===== PAGE CONTENT ===== -->
+<div class="container mt-4">
+    {% block content %}{% endblock %}
 </div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="car-footer text-center mt-5 py-3">
+    <p>Django Car Platform built with ❤ by
+        <a href="https://www.linkedin.com/in/om-prakash-bisoi-08438b321" target="_blank">
+            Om Prakash Bisoi
+        </a>
+    </p>
+</footer>
+
 </body>
 </html>

@@ -1,5 +1,3 @@
-/* stylelint-disable selector-list-comma-newline-after */
-
 /* ===== HEADER ===== */
 .home-header {
   border-bottom: 1px solid #e5e5e5;
@@ -19,10 +17,26 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Playfair Display", Georgia, "Times New Roman", serif;
 }
 
-/* ===== HERO TITLE ===== */
+/* ===== HERO SECTION ===== */
+/* ===== HERO SECTION HEIGHT FIX ===== */
+.hero-section {
+    height: 420px;              /* 🔥 Increase this number for taller image */
+    display: flex;
+    align-items: center;        /* vertically center text */
+    padding: 40px;
+    border-radius: 12px;
+}
+
+
+.hero-section h1,
+.hero-section p {
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+
 .display-4 {
   font-size: 2.5rem;
 }
+
 @media (min-width: 768px) {
   .display-4 {
     font-size: 3rem;
