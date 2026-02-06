@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- ===== HERO SECTION ===== -->
+<div class="jumbotron hero-section text-white"
+     style="background-image:
+     linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+     url('{% static "images/car_lelo_hero.jpg" %}');
+     background-size: cover;
+     background-position: center;">
+
+
+  <div class="col-md-6 px-0">
+    <h1 class="display-4">Find Your Perfect Car 🚗</h1>
+    <p class="lead my-3">Buy and sell cars easily with our Django powered platform.</p>
+  </div>
+
+</div>
+
+<!-- ===== LATEST LISTINGS ===== -->
+<div class="home-section mt-5">
+  <h2 class="section-title">Latest Listings</h2>
+  <p class="section-meta">Browse recently added cars</p>
+
+  <div class="row">
+
+    <!-- SAMPLE CARD (Later loop from DB) -->
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="h-250 bg-secondary"></div>
+        <div class="card-body">
+          <h5>Car Model</h5>
+          <p>Short description here.</p>
+          <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="h-250 bg-secondary"></div>
+        <div class="card-body">
+          <h5>Car Model</h5>
+          <p>Short description here.</p>
+          <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="h-250 bg-secondary"></div>
+        <div class="card-body">
+          <h5>Car Model</h5>
+          <p>Short description here.</p>
+          <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
