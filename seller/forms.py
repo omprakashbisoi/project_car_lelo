@@ -7,9 +7,9 @@ class CarDetailForm(forms.ModelForm):
     class Meta:
         model = CarDetail
         fields = "__all__"
-class ImageUpload(forms.ModelForm):
-    class Meta:
-        model = ImageStore
-        fields = ('image',)
+# class ImageUpload(forms.ModelForm):
+#     class Meta:
+#         model = ImageStore
+#         fields = ('image',)
     
  

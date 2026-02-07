@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h3 class="text-warning" style="letter-spacing: 2px;">
+    Search Term - {{ keyword }}
+</h3>
+
+{% if cars %}
+<div class="row">
+
+    {% for car in cars %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm rounded-4 border-0 h-100">
+
+            <!-- Image Section -->
+            <div class="position-relative bg-light rounded-top-4">
+                <img src="{% static 'images/car.png' %}" class="card-img-top p-3" alt="Car Image">
+                <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
+                    ♡
+                </button>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+
+                <span class="badge bg-primary-subtle text-primary mb-2">
+                    Car Lelo Owned Stock
+                </span>
+
+                <h6 class="fw-bold">
+                    {{ car.year }} {{ car.brand }} {{ car.car_model }} {{ car.variant }}
+                </h6>
+
+                <!-- Specs -->
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-light text-dark">
+                        {{ car.kilometers }} km
+                    </span>
+                    <span class="badge bg-light text-dark">
+                        {{ car.fuel_type }}
+                    </span>
+                </div>
+
+                <!-- Price -->
+                <h5 class="fw-bold text-dark">
+                    ₹ {{ car.price }}
+                </h5>
+
+                <!-- Location -->
+                <p class="text-muted small mb-0">
+                    📍 {{ car.car_location }}
+                </p>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% else %}
+    <h3 class="text-danger mt-4">No Result Found</h3>
+{% endif %}
+
+{% endblock %}
