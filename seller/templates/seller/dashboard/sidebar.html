@@ -1,0 +1,16 @@
+<div class="col-md-3">
+    <div class="nav flex-column nav-pills bg-light" aria-orientation="vertical">
+        <a href="{% url 'dashboard' request.user.id %}"
+           class="nav-link text-dark {% if '/overal_view/' in request.path %}bg-warning{% endif %}">
+            Dashboard
+        </a>
+        <a href="{% url "detail_view" request.user.id %}"
+           class="nav-link text-dark {% if '/detail_view/' in request.path %}bg-warning{% endif %}">
+            Details
+        </a>
+        <a href="{% url 'uploded_image_view' request.user.id %}"
+           class="nav-link text-dark {% if '/uploded_image_view/' in request.path %}bg-warning{% endif %}">
+            Images
+        </a>
+    </div>
+</div>

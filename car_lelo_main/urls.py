@@ -26,7 +26,7 @@ urlpatterns = [
     path('', include("seller.urls")),
     path('seller/', include("seller.urls")),
     path('register/', views.register,name = 'register'),
-    path('login/', views.login,name='login'),
+    path('login/', views.user_login,name='login'),
     path('logout/', views.user_logout,name='logout'),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+    {% include "seller/dashboard/sidebar.html" %}
+
+    <div class="col-md-9">
+
+        <h2>All Cars List</h2>
+        <a href="{% url 'car_details' %}" class="btn btn-dark text-light float-end mb-3">
+            Add New
+        </a>
+
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Sl No.</th>
+                    <th>Brand</th>
+                    <th>Car Model</th>
+                    <th>Variant</th>
+                    <th>Year</th>
+                    <th>Fuel Type</th>
+                    <th>Kilometers</th>
+                    <th>Reg State</th>
+                    <th>Price</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for car in cars %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ car.brand }}</td>
+                    <td>{{ car.car_model }}</td>
+                    <td>{{ car.variant }}</td>
+                    <td>{{ car.year }}</td>
+                    <td>{{ car.fuel_type }}</td>
+                    <td>{{ car.kilometers }}</td>
+                    <td>{{ car.reg_state }}</td>
+                    <td>₹ {{ car.price }}</td>
+
+                    <td class="text-center">
+                        {% if car.is_available %}
+                            <i class="fa-solid fa-check text-success"></i>
+                        {% else %}
+                            <i class="fa-solid fa-xmark text-danger"></i>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-center">
+                        <a href="{% url "edit_car" car.id %}" class="me-2">
+                            <i class="fa-solid fa-pen-to-square text-dark"></i>
+                        </a>
+
+                        <a href="#">
+                            <i class="fa-solid fa-trash text-danger"></i>
+                        </a>
+                    </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="11" class="text-center text-muted">
+                        No cars found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

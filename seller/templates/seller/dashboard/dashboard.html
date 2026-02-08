@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    {% include "seller/dashboard/sidebar.html" %}
+
+    <div class="col-md-9">
+        <span>Logged in as <b>{{ request.user.username }}</b></span>
+        <!-- main content here -->
+         <div class="row">
+            <div class="col">
+                <div class="card boader-default mb-3">
+                    <div class="card-header text-center text-uppercase font-weigth-blod ">
+                        All Cars
+                    </div>
+                    <div class="card-body text-dark">
+                        <h5 class="card-title text-center">
+                            {{ car_count }}
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col">
+                <div class="card boader-default mb-3">
+                    <div class="card-header text-center text-uppercase font-weight-blod ">
+                        Car Selled
+                    </div>
+                    <div class="card-body text-dark">
+                        <h5 class="card-title text-center">
+                            0
+                        </h5>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+</div>
+{% endblock %}

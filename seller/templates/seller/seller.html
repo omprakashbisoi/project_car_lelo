@@ -3,6 +3,85 @@
 
 {% block content %}
 
+<!-- 🔥 HERO SECTION -->
+<div class="hero-section text-white py-5"
+     style="background-image:
+     linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+     url('{% static "images/car_lelo_hero.jpg" %}');
+     background-size: cover;
+     background-position: center;">
 
+    <div class="container">
+        <div class="col-md-6 px-0">
+            <h1 class="display-4">
+                Sell your car at the BEST PRICE in minutes 🚗
+            </h1>
+            <p class="lead my-2">India’s No.1 selling platform</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- 🔥 CAR LIST SECTION -->
+<div class="container my-5">
+    <div class="row">
+
+        {% if cars %}
+            {% for car in cars %}
+            <div class="col-md-4 mb-4">
+                <a href="#" class="text-decoration-none text-dark">
+                    <div class="card shadow-sm rounded-4 border-0 h-100">
+
+                        <!-- Image -->
+                        <div class="position-relative bg-light rounded-top-4">
+                            <img src="{% static 'images/car_lelo_hero.jpg' %}"
+                                 class="card-img-top p-3"
+                                 alt="Car Image">
+                            <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
+                                ♡
+                            </button>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="card-body">
+
+                            <span class="badge bg-primary-subtle text-primary mb-2">
+                                Car Lelo Owned Stock
+                            </span>
+
+                            <h6 class="fw-bold">
+                                {{ car.year }} {{ car.brand }} {{ car.car_model }} {{ car.variant }}
+                            </h6>
+
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <span class="badge bg-light text-dark">
+                                    {{ car.kilometers }} km
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    {{ car.fuel_type }}
+                                </span>
+                            </div>
+
+                            <h5 class="fw-bold">
+                                ₹ {{ car.price }}
+                            </h5>
+
+                            <p class="text-muted small mb-0">
+                                📍 {{ car.car_location }}
+                            </p>
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <h4 class="text-center text-muted">No Cars Available</h4>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
 
 {% endblock %}
