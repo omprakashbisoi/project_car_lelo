@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+
 
 
 
@@ -74,10 +75,6 @@ KILOMETER_CHOICES = [
 ]
 
 
-
-from django.db import models
-from django.contrib.auth.models import User
-
 def image_upload_path(instance, filename):
     username = instance.car.seller.username
     brand = instance.car.brand.replace(' ', '_')
@@ -87,7 +84,7 @@ def image_upload_path(instance, filename):
 
 class CarDetail(models.Model):
 
-    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     brand = models.CharField(max_length=50, choices=BRAND_CHOICES)
     car_model = models.CharField(max_length=100)
@@ -130,3 +127,4 @@ class ImageStore(models.Model):
 
     def __str__(self):
         return f"Image for {self.car.seller.username}-{self.car.brand}"
+

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'buyer',
     'crispy_forms',
     'crispy_bootstrap5',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -80,7 +81,7 @@ WSGI_APPLICATION = 'car_lelo_main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'car_lelo_db',
+        'NAME': 'car_lelo_db_customize',
         'USER': 'root',
         'PASSWORD': 'Kanha#1234',
         'HOST': 'localhost',
@@ -141,3 +142,4 @@ EMAIL_HOST_USER = 'carleloteam@gmail.com'
 EMAIL_HOST_PASSWORD = 'awix rdpg ruti wrqz'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+AUTH_USER_MODEL = 'accounts.CustomUser'

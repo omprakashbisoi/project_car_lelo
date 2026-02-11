@@ -23,10 +23,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('buyer/', include("buyer.urls")),
-    path('', include("seller.urls")),
+    path('', include("buyer.urls")),
     path('seller/', include("seller.urls")),
-    path('register/', views.register,name = 'register'),
-    path('login/', views.user_login,name='login'),
-    path('logout/', views.user_logout,name='logout'),
+    path('accounts/', include("accounts.urls")),
+    
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
