@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CarDetailForm
 from .models import CarDetail,ImageStore
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def seller(request):
@@ -10,6 +10,7 @@ def seller(request):
         'cars':cars,
     }
     return render(request,'seller/seller.html',context)
+@login_required
 def car_details(request):
     if request.method == "POST":
         form = CarDetailForm(request.POST)
@@ -22,6 +23,8 @@ def car_details(request):
         'form':form,
     }
     return render(request,'seller/car_detail.html',context)
+
+@login_required
 def image_upload(request,car_id):
     car = get_object_or_404(CarDetail,id = car_id)
     if request.method == "POST":
@@ -30,7 +33,7 @@ def image_upload(request,car_id):
             ImageStore.objects.create(car=car,image = image)
         return redirect('seller')
     return render(request, 'seller/image_upload.html', {'car': car})
-
+@login_required
 def dashboard(request,user_id):
     car_count = CarDetail.objects.filter(seller=user_id).count()
     context={
@@ -48,7 +51,7 @@ def detail_view(request, user_id):
     }
 
     return render(request, 'seller/dashboard/car_detail_view.html', context)
-
+@login_required
 def edit_car(request,user_id):
     car = get_object_or_404(CarDetail,pk= user_id)
     if request.method == "POST":
@@ -63,13 +66,13 @@ def edit_car(request,user_id):
         'form':form,
     }
     return render(request,'seller/dashboard/edit_car_details.html',context)
-
+@login_required
 def delete_car(request,user_id):
     car = get_object_or_404(CarDetail,pk= user_id)
     ImageStore.objects.filter(car=car).delete()
     car.delete()
     return redirect('detail_view')
-
+@login_required
 def uploded_image_view(request,user_id):
     images = ImageStore.objects.filter(car__seller_id=user_id)
 

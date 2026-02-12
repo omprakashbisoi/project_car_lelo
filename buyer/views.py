@@ -33,3 +33,5 @@ def search(request):
     }
 
     return render(request, 'buyer/search.html', context)
+
+

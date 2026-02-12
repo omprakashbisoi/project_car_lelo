@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h3 class="text-center">Verify your OTP</h3>
+
+<form method="POST" style="width: 500px; margin:auto;" action="{% url 'verify_otp' %}">
+    {% csrf_token %}
+
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            {{ form.errors }}
+        </div>
+    {% endif %}
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+
+    {{ form|crispy }}
+
+    <button type="submit" class="btn btn-primary w-100">Submit</button>
+</form>
+
+{% endblock %}
