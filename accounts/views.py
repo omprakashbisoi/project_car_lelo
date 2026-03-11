@@ -1,5 +1,4 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
 from .utils import generate_otp
 from .models import EmailOTP
 from django.utils import timezone

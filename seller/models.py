@@ -75,11 +75,6 @@ KILOMETER_CHOICES = [
 ]
 
 
-def image_upload_path(instance, filename):
-    username = instance.car.seller.username
-    brand = instance.car.brand.replace(' ', '_')
-    return f"{username}/{brand}/{filename}"
-
 # MODEL
 
 class CarDetail(models.Model):
@@ -111,6 +106,11 @@ class CarDetail(models.Model):
 
 # MULTIPLE IMAGE MODEL
 
+
+def image_upload_path(instance, filename):
+    username = instance.car.seller.username
+    brand = instance.car.brand.replace(' ', '_')
+    return f"{username}/{brand}/{filename}"
 class ImageStore(models.Model):
 
     car = models.ForeignKey(
