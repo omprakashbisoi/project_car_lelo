@@ -105,12 +105,27 @@ class CarDetail(models.Model):
         return f"{self.seller.username} -- {self.brand} {self.car_model}"
 
 # MULTIPLE IMAGE MODEL
-
+import os
+import uuid
+from django.utils.text import  slugify
 
 def image_upload_path(instance, filename):
     username = instance.car.seller.username
-    brand = instance.car.brand.replace(' ', '_')
-    return f"{username}/{brand}/{filename}"
+    car_id = instance.car.id
+    brand = slugify(instance.car.brand)
+    file_extension = os.path.splitext(filename)[1]
+    unique_fileN = f"{uuid.uuid4()}{file_extension}"
+    return f"cars/{username}/{brand}/{car_id}/{unique_fileN}"
+
+IMAGE_TYPE = [
+    ("front", "Front"),
+    ("back", "Back"),
+    ("side", "Side"),
+    ("interior", "Interior"),
+    ("engine", "Engine"),
+]
+from PIL import Image
+from django.core.exceptions import ValidationError
 class ImageStore(models.Model):
 
     car = models.ForeignKey(
@@ -124,6 +139,28 @@ class ImageStore(models.Model):
         blank=True,
         null=True
     )
+
+    img_type = models.CharField(
+        max_length=50,
+        blank=True,
+        choices=IMAGE_TYPE
+    )
+    #Image compresion+resizing
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image:
+            img = Image.open(self.image.path)
+            allowed_formats = ['JPEG','PNG','WEBP']
+            if img.format not in allowed_formats:
+                raise ValidationError('Unsupported image format')
+            if img.height > 1200 or img.width > 1200:
+                img.thumbnail((1200, 1200))
+            img = img.convert("RGB")
+            img.save(self.image.path,optimize = True,format="WEBP",quality = 80)
+    #Image Validation
+     
+            
 
     def __str__(self):
         return f"Image for {self.car.seller.username}-{self.car.brand}"
