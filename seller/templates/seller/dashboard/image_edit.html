@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2>Edit Car Image</h2>
+
+<hr>
+
+<div class="card p-4" style="max-width:500px;">
+
+<h5>
+{{ image.car.brand }} - {{ image.car.car_model }}
+</h5>
+
+<br>
+
+<!-- Current Image -->
+<div class="mb-3">
+<label>Current Image</label><br>
+<img src="{{ image.image.url }}" width="250" class="img-thumbnail">
+</div>
+
+<!-- Edit Form -->
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="mb-3">
+<label>Image Type</label>
+{{ form.img_type }}
+</div>
+
+<div class="mb-3">
+<label>Upload New Image</label>
+{{ form.image }}
+</div>
+
+<button type="submit" class="btn btn-success">
+Update Image
+</button>
+
+<a href="{% url 'uploded_image_view' %}" 
+class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

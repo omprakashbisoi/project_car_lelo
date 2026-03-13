@@ -8,7 +8,7 @@
            class="nav-link text-dark {% if '/detail_view/' in request.path %}bg-warning{% endif %}">
             Details
         </a>
-        <a href="{% url 'uploded_image_view' request.user.id %}"
+        <a href="{% url 'uploded_image_view' %}"
            class="nav-link text-dark {% if '/uploded_image_view/' in request.path %}bg-warning{% endif %}">
             Images
         </a>

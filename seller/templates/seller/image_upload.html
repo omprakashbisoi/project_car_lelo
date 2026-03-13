@@ -1,13 +1,67 @@
 {% extends "base.html" %}
 {% block content %}
+
+<div class="container mt-4">
+
+<h3>
+Upload Images for {{ car.brand }} {{ car.car_model }}
+</h3>
+
 <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <input type="file" name="images" multiple>
-    <input type="file" name="images" multiple>
-    <input type="file" name="images" multiple>
-    <input type="file" name="images" multiple>
-    
-    <button type="submit">Upload Images</button>
+
+{% csrf_token %}
+
+{{ form.as_p }}
+
+<button class="btn btn-success">
+Upload
+</button>
+
 </form>
+
+<hr>
+
+<h4>Uploaded Images</h4>
+
+<div class="row">
+
+{% for image in images %}
+
+<div class="col-md-3">
+
+<div class="card mb-3">
+
+<img src="{{ image.image.url }}" class="card-img-top">
+
+<div class="card-body text-center">
+
+<p>{{ image.img_type }}</p>
+
+<a href="{% url 'uploded_image_edit' image.id %}" class="btn btn-warning btn-sm">
+Edit
+</a>
+
+<form action="{% url 'uploded_image_delete' image.id %}" method="POST" style="display:inline;">
+{% csrf_token %}
+<button class="btn btn-danger btn-sm">
+Delete
+</button>
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>No images uploaded yet.</p>
+
+{% endfor %}
+
+</div>
+
+</div>
+
 {% endblock %}

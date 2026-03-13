@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.seller, name='seller'),
     path('car_details/', views.car_details, name='car_details'),
-    path('car_details/<int:car_id>/image/', views.image_upload, name='image_upload'),
+    
 
     path('dashboard/overal_view/<int:user_id>/', views.dashboard, name='dashboard'),
     #car detail curd
@@ -13,5 +13,8 @@ urlpatterns = [
     path('dashboard/delete_car/<int:user_id>/', views.delete_car, name='delete_car'),
 
     #image curd
-    path('dashboard/uploded_image_view/<int:user_id>/', views.uploded_image_view, name='uploded_image_view'),
+    path('car_details/image_upload/<int:car_id>/', views.image_upload, name='image_upload'),
+    path('dashboard/uploded_image_view/', views.uploded_image_view, name='uploded_image_view'),
+    path('dashboard/uploded_image_edit/<int:image_id>/', views.uploaded_image_edit, name='uploded_image_edit'),
+    path('dashboard/uploded_image_delete/<int:image_id>/', views.uploaded_image_delete, name='uploded_image_delete'),
 ]
