@@ -1,14 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
-
+from django.conf import settings
  
+from django.core.validators import RegexValidator
 ROLE = (
     ('admin', 'Admin'),
     ('buyer', 'Buyer'),
     ('seller', 'Seller'),
 )
-from django.core.validators import RegexValidator
 class CustomUser(AbstractUser):
 
     phone = models.CharField(
@@ -48,5 +48,16 @@ class EmailOTP(models.Model):
 
     def __str__(self):
         return self.email
+class PasswordResetOTP(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    expiry_time = models.DateTimeField()
+    resend_count = models.PositiveIntegerField(default=0)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def is_expired(self):
+        return timezone.now() > self.expiry_time
+    def __str__(self):
+        return f"{self.user.username}-{self.otp}"
 
 

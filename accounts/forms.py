@@ -12,16 +12,25 @@ class RegistrationForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         if CustomUser.objects.filter(email=email).exists():
             raise forms.ValidationError("Email already registered.")
+        
         return email
 
 
+
+from django import forms
 
 class OTPVerificationForm(forms.Form):
     otp = forms.CharField(
         max_length=6,
         min_length=6,
-        widget=forms.TextInput(attrs={'placeholder': 'Enter 6-digit OTP'})
+        required=True,
+        error_messages={
+            'required': 'OTP field cannot be blank.',
+            'min_length': 'OTP must be 6 digits.',
+            'max_length': 'OTP must be 6 digits.'
+        }
     )
+
 
 
 class CompleteRegistrationForm(UserCreationForm):
@@ -42,3 +51,10 @@ from django import forms
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=150)
     password = forms.CharField(widget=forms.PasswordInput)
+
+class EmailForm(forms.Form):
+    email = forms.CharField(max_length=100)
+
+class NewPasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)

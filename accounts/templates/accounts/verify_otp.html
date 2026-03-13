@@ -5,17 +5,12 @@
 
 <h3 class="text-center">Verify your OTP</h3>
 
-<form method="POST" style="width: 500px; margin:auto;" action="{% url 'verify_otp' %}">
+<form method="POST" style="width: 500px; margin:auto;" action="{% url 'email_verify_otp' %}">
     {% csrf_token %}
 
     {% if form.errors %}
         <div class="alert alert-danger">
             {{ form.errors }}
-        </div>
-    {% endif %}
-    {% if error %}
-        <div class="alert alert-danger">
-            {{ error }}
         </div>
     {% endif %}
 
