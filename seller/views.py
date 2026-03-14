@@ -53,8 +53,8 @@ def detail_view(request, user_id):
 
 
 @login_required
-def edit_car(request,user_id):
-    car = get_object_or_404(CarDetail,pk=user_id)
+def edit_car(request,car_id):
+    car = get_object_or_404(CarDetail,pk=car_id)
 
     if car.seller != request.user:
         messages.error(request,"You are not allowed to edit this car")
@@ -77,8 +77,8 @@ def edit_car(request,user_id):
 
 
 @login_required
-def delete_car(request,user_id):
-    car = get_object_or_404(CarDetail,pk=user_id)
+def delete_car(request,car_id):
+    car = get_object_or_404(CarDetail,pk=car_id)
 
     if car.seller != request.user:
         messages.error(request,"You are not allowed to delete this car")
@@ -88,7 +88,7 @@ def delete_car(request,user_id):
     car.delete()
     messages.success(request,"Car deleted successfully")
 
-    return redirect('detail_view',user_id=request.user.id)
+    return redirect('detail_view',car_id=request.car.id)
 
 
 @login_required
