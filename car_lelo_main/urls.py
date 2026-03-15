@@ -22,9 +22,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('buyer/', include("buyer.urls")),
     path('', include("buyer.urls")),
+    path('buyer/', include("buyer.urls")),
     path('seller/', include("seller.urls")),
     path('accounts/', include("accounts.urls")),
     path("profile/", include("user_profile.urls")),
+    path("wishlist/", include("wishlist.urls")),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

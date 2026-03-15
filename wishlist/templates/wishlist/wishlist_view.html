@@ -1,0 +1,5 @@
+{% for item in wishlist %}
+    <p>{{ item.car.brand }} - {{ item.car.price }}</p>
+{% empty %}
+    <p>No cars in wishlist</p>
+{% endfor %}
