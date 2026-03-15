@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+
+```
+<!-- NAVIGATION TABS -->
+<ul class="nav nav-tabs mb-4">
+
+    <li class="nav-item">
+        <a class="nav-link active" href="#">Edit Profile</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Wishlist</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Orders</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Bookings</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Sell</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Dashboard</a>
+    </li>
+
+</ul>
+
+
+<div class="row">
+
+    <!-- LEFT PROFILE CARD -->
+    <div class="col-md-3">
+
+        <div class="card shadow text-center p-4">
+
+            {% if profile.image %}
+            <img src="{{ profile.image.url }}"
+                 class="rounded-circle mx-auto mb-3"
+                 width="120"
+                 height="120"
+                 style="object-fit:cover;">
+            {% else %}
+            <img src="https://via.placeholder.com/120"
+                 class="rounded-circle mx-auto mb-3">
+            {% endif %}
+            
+            <hr>
+            <!-- Profile Image -->
+                <div class="col-md-14 mb-1">
+                    <input type="file"
+                           name="image"
+                           class="form-control">
+                </div>
+
+            <a href="{% url 'logout' %}" class="btn btn-danger w-100">
+                Sign Out
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT PROFILE FORM -->
+    <div class="col-md-9">
+
+        <div class="card shadow p-4">
+
+            <h4 class="mb-4">Profile Details</h4>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <!-- Username -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Username</label>
+                        <input class="form-control"
+                               value="{{ user.username }}"
+                               readonly>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email"
+                               name="email"
+                               class="form-control"
+                               value="{{ user.email }}"
+                               readonly>
+                    </div>
+
+                    <!-- Mobile / Bio -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mobile</label>
+                        <input type="text"
+                               name="bio"
+                               class="form-control"
+                               value="{{ profile.bio }}"
+                               placeholder="Enter Mobile Number">
+                    </div>
+
+                    <!-- City -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text"
+                               name="city"
+                               class="form-control"
+                               value="{{ location.city }}"
+                               placeholder="Enter City">
+                    </div>
+
+                    <!-- State -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">State</label>
+                        <input type="text"
+                               name="state"
+                               class="form-control"
+                               value="{{ location.state }}"
+                               placeholder="Enter State">
+                    </div>
+
+                    <!-- PIN -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">PIN Code</label>
+                        <input type="text"
+                               name="pin"
+                               class="form-control"
+                               value="{{ location.pin }}"
+                               placeholder="Enter PIN Code">
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="address"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Enter Address">{{ location.address }}</textarea>
+                    </div>
+
+                </div>
+
+
+                <!-- ACTION BUTTONS -->
+                <div class="d-flex justify-content-between mt-3">
+
+                    <a href="#" class="btn btn-outline-danger">
+                        Delete Profile
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        Update Profile
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+{% endblock %}
