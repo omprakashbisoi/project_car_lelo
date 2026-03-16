@@ -1,6 +1,6 @@
 from django import forms
-from .models import Profile, Location
-
+from .models import Profile
+from location.models import Location
 
 
 class ProfileUpdateForm(forms.ModelForm):

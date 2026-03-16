@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import ProfileUpdateForm, LocationUpdateForm
-from .models import Profile, Location
-
+from .models import Profile
+from .forms import ProfileUpdateForm,LocationUpdateForm
+from location.models import Location
 
 @login_required
 def profile_view(request):
@@ -10,7 +10,7 @@ def profile_view(request):
     user = request.user
 
     profile, created = Profile.objects.get_or_create(user=user)
-    location, created = Location.objects.get_or_create(profile=profile)
+    location, created = Profile.objects.get_or_create(profile=profile)
 
     if request.method == "POST":
 
@@ -39,8 +39,8 @@ def profile_view(request):
     context = {
         "user": user,
         "profile_form": profile_form,
-        "location_form": location_form,
         "profile": profile,
+        "location_form": location_form,
         "location": location,
     }
 

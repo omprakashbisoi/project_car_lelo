@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'user_profile',
     'accounts',
     'wishlist',
+    'location',
 ]
 
 MIDDLEWARE = [

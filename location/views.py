@@ -1,5 +1,3 @@
 from django.shortcuts import render
 
 # Create your views here.
-def order_view(request,car_id):
-    pass

@@ -1,7 +1,12 @@
 from django.db import models
 from django.conf import settings
-
-
+from PIL import Image
+from io import BytesIO
+from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
+import os
+import uuid
+from django.utils.text import  slugify
 
 
 
@@ -78,9 +83,7 @@ KILOMETER_CHOICES = [
 # MODEL
 
 class CarDetail(models.Model):
-
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
     brand = models.CharField(max_length=50, choices=BRAND_CHOICES)
     car_model = models.CharField(max_length=100)
     variant = models.CharField(max_length=100, blank=True)
@@ -97,7 +100,8 @@ class CarDetail(models.Model):
     description = models.TextField(max_length=500, blank=True)
 
     is_available = models.BooleanField(default=True)
-
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -105,9 +109,7 @@ class CarDetail(models.Model):
         return f"{self.seller.username} -- {self.brand} {self.car_model}"
 
 # MULTIPLE IMAGE MODEL
-import os
-import uuid
-from django.utils.text import  slugify
+
 
 def image_upload_path(instance, filename):
     username = instance.car.seller.username
@@ -124,8 +126,7 @@ IMAGE_TYPE = [
     ("interior", "Interior"),
     ("engine", "Engine"),
 ]
-from PIL import Image
-from django.core.exceptions import ValidationError
+
 class ImageStore(models.Model):
 
     car = models.ForeignKey(
@@ -134,33 +135,55 @@ class ImageStore(models.Model):
         related_name='images'
     )
 
-    image = models.ImageField(
-        upload_to=image_upload_path,
-        blank=True,
-        null=True
-    )
-
-    img_type = models.CharField(
-        max_length=50,
-        blank=True,
-        choices=IMAGE_TYPE
-    )
+    image = models.ImageField(upload_to=image_upload_path,)
+    img_type = models.CharField(max_length=50,choices=IMAGE_TYPE)
     #Image compresion+resizing
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
 
         if self.image:
-            img = Image.open(self.image.path)
-            allowed_formats = ['JPEG','PNG','WEBP']
+            img = Image.open(self.image)
+
+            allowed_formats = ["JPEG", "PNG", "WEBP"]
+
             if img.format not in allowed_formats:
-                raise ValidationError('Unsupported image format')
+                raise ValidationError("Unsupported image format")
+
+            # Resize image if too large
             if img.height > 1200 or img.width > 1200:
                 img.thumbnail((1200, 1200))
+
+            # Convert image to RGB for WEBP compatibility
             img = img.convert("RGB")
-            img.save(self.image.path,optimize = True,format="WEBP",quality = 80)
+
+            buffer = BytesIO()
+
+            # Save image to buffer as WEBP
+            img.save(buffer, format="WEBP", optimize=True, quality=80)
+
+            buffer.seek(0)
+
+            # Create safe filename
+            filename = os.path.splitext(self.image.name)[0]
+
+            # Save converted image
+            self.image.save(
+                f"{filename}.webp",
+                ContentFile(buffer.read()),
+                save=False
+            )
+
+            img.close()
+
+        super().save(*args, **kwargs)
     #Image Validation
      
-            
+    class Meta:
+        constrains = [
+            models.UniqueConstraint(
+                fields=['car','img_type',],
+                name = 'unique_car-image_type'
+            )
+        ]        
 
     def __str__(self):
         return f"Image for {self.car.seller.username}-{self.car.brand}"
