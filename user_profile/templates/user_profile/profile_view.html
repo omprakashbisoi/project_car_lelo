@@ -28,7 +28,7 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="#">Dashboard</a>
+        <a class="nav-link" href=" {% url "dashboard" %} ">Dashboard</a>
     </li>
 
 </ul>
@@ -41,8 +41,8 @@
 
         <div class="card shadow text-center p-4">
 
-            {% if profile.image %}
-            <img src="{{ profile.image.url }}"
+            {% if profile.profile_image %}
+            <img src="{{ profile.profile_image.url }}"
                  class="rounded-circle mx-auto mb-3"
                  width="120"
                  height="120"
@@ -53,10 +53,10 @@
             {% endif %}
             
             <hr>
-            <!-- Profile Image -->
+            <!-- Profile profile_Image -->
                 <div class="col-md-14 mb-1">
                     <input type="file"
-                           name="image"
+                           name="profile_image"
                            class="form-control">
                 </div>
 
@@ -154,9 +154,10 @@
                 <!-- ACTION BUTTONS -->
                 <div class="d-flex justify-content-between mt-3">
 
-                    <a href="#" class="btn btn-outline-danger">
-                        Delete Profile
-                    </a>
+                    <form method="POST" action="{% url 'delete_profile' %}">
+                            {% csrf_token %}
+                            <button type="submit">Delete Profile</button>
+                        </form>
 
                     <button type="submit" class="btn btn-primary">
                         Update Profile

@@ -6,7 +6,7 @@ from location.models import Location
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ["image", "bio"]
+        fields = ["profile_image", "bio"]
 
 
 class LocationUpdateForm(forms.ModelForm):

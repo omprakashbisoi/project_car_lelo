@@ -135,38 +135,39 @@ class ImageStore(models.Model):
         related_name='images'
     )
 
-    image = models.ImageField(upload_to=image_upload_path,)
+    car_image = models.ImageField(upload_to=image_upload_path,blank=True,
+        null=True,)
     img_type = models.CharField(max_length=50,choices=IMAGE_TYPE)
     #Image compresion+resizing
     def save(self, *args, **kwargs):
 
-        if self.image:
-            img = Image.open(self.image)
+        if self.car_image:
+            img = Image.open(self.car_image)
 
             allowed_formats = ["JPEG", "PNG", "WEBP"]
 
             if img.format not in allowed_formats:
-                raise ValidationError("Unsupported image format")
+                raise ValidationError("Unsupported car_image format")
 
-            # Resize image if too large
+            # Resize car_image if too large
             if img.height > 1200 or img.width > 1200:
                 img.thumbnail((1200, 1200))
 
-            # Convert image to RGB for WEBP compatibility
+            # Convert car_image to RGB for WEBP compatibility
             img = img.convert("RGB")
 
             buffer = BytesIO()
 
-            # Save image to buffer as WEBP
+            # Save car_image to buffer as WEBP
             img.save(buffer, format="WEBP", optimize=True, quality=80)
 
             buffer.seek(0)
 
             # Create safe filename
-            filename = os.path.splitext(self.image.name)[0]
+            filename = os.path.splitext(self.car_image.name)[0]
 
-            # Save converted image
-            self.image.save(
+            # Save converted car_image
+            self.car_image.save(
                 f"{filename}.webp",
                 ContentFile(buffer.read()),
                 save=False
@@ -178,7 +179,7 @@ class ImageStore(models.Model):
     #Image Validation
      
     class Meta:
-        constrains = [
+        constraints  = [
             models.UniqueConstraint(
                 fields=['car','img_type',],
                 name = 'unique_car-image_type'

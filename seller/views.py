@@ -88,7 +88,7 @@ def delete_car(request,car_id):
     car.delete()
     messages.success(request,"Car deleted successfully")
 
-    return redirect('detail_view',car_id=request.car.id)
+    return redirect('detail_view',user_id=request.user)
 
 
 @login_required

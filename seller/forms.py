@@ -9,7 +9,7 @@ class CarDetailForm(forms.ModelForm):
 class ImageUploadForm(forms.ModelForm):
     class Meta:
         model = ImageStore
-        fields = ("image","img_type",)
+        fields = ("car_image","img_type",)
     def clean_image(self):
         image = self.cleaned_data.get("image")
         if image:

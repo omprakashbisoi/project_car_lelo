@@ -1,15 +1,19 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from user_profile.models import Profile
 # Create your models here.
 class Location(models.Model):
-
-    city = models.CharField(max_length=50)
-    state = models.CharField(max_length=50)
-    country = models.CharField(max_length=50, default="India")
-
+    profile = models.OneToOneField(
+    Profile,
+    on_delete=models.CASCADE,
+    related_name="location"
+    )
+    city = models.CharField(max_length=50, blank=True)
+    state = models.CharField(max_length=50, blank=True)
+    country = models.CharField(max_length=50, default="India", blank=True)
     pin = models.CharField(
         max_length=6,
-        validators=[RegexValidator(r'^\d{6}$', 'Enter a valid 6 digit PIN code')]
+        validators=[RegexValidator(r'^\d{6}$', 'Enter a valid 6 digit PIN code')], blank=True
     )
 
     address = models.CharField(max_length=255, blank=True)

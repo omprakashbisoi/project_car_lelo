@@ -7,8 +7,6 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from seller.models import CarDetail
-
 
 def image_upload_path(instance, filename):
 
@@ -27,12 +25,11 @@ class Profile(models.Model):
         on_delete=models.CASCADE
     )
 
-    image = models.ImageField(
+    profile_image = models.ImageField(
         upload_to=image_upload_path,
         blank=True,
-        null=True
+        null=True,
     )
-
     bio = models.CharField(max_length=100, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -40,9 +37,9 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if self.image and not self.image.name.endswith(".webp"):
+        if self.profile_image and not self.profile_image.name.endswith(".webp"):
 
-            img = Image.open(self.image)
+            img = Image.open(self.profile_image)
 
             allowed_formats = ["JPEG", "PNG", "WEBP"]
 
@@ -65,9 +62,9 @@ class Profile(models.Model):
 
             buffer.seek(0)
 
-            filename = Path(self.image.name).stem
+            filename = Path(self.profile_image.name).stem
 
-            self.image.save(
+            self.profile_image.save(
                 f"{filename}.webp",
                 ContentFile(buffer.read()),
                 save=False
@@ -76,6 +73,5 @@ class Profile(models.Model):
             img.close()
 
         super().save(*args, **kwargs)
-
     def __str__(self):
         return self.user.username

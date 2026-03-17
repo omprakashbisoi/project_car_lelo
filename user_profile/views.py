@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect ,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Profile
 from .forms import ProfileUpdateForm,LocationUpdateForm
@@ -10,7 +10,7 @@ def profile_view(request):
     user = request.user
 
     profile, created = Profile.objects.get_or_create(user=user)
-    location, created = Profile.objects.get_or_create(profile=profile)
+    location, created = Location.objects.get_or_create(profile=profile)
 
     if request.method == "POST":
 
@@ -45,3 +45,13 @@ def profile_view(request):
     }
 
     return render(request, "user_profile/profile_view.html", context)
+
+@login_required
+def delete_profile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if request.method == "POST":
+        profile.delete()
+        return redirect('profile_view')
+
+    return redirect('profile_view')
