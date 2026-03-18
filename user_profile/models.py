@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from location.models import Location
 
 def image_upload_path(instance, filename):
 
@@ -24,11 +25,12 @@ class Profile(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-
+    profile_location = models.OneToOneField(Location,on_delete=models.SET_NULL,blank=True,null=True,related_name="user")
     profile_image = models.ImageField(
         upload_to=image_upload_path,
         blank=True,
         null=True,
+        
     )
     bio = models.CharField(max_length=100, blank=True, null=True)
 

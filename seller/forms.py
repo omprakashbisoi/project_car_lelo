@@ -1,11 +1,15 @@
-
 from django import forms
 from .models import CarDetail,ImageStore
+from location.models import Location
 
 class CarDetailForm(forms.ModelForm):
     class Meta:
         model = CarDetail
         exclude = ("seller",)
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = ["city", "state", "pin", "address"]
 class ImageUploadForm(forms.ModelForm):
     class Meta:
         model = ImageStore

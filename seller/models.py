@@ -82,8 +82,12 @@ KILOMETER_CHOICES = [
 
 # MODEL
 
+from location.models import Location
+
 class CarDetail(models.Model):
+
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
     brand = models.CharField(max_length=50, choices=BRAND_CHOICES)
     car_model = models.CharField(max_length=100)
     variant = models.CharField(max_length=100, blank=True)
@@ -93,15 +97,19 @@ class CarDetail(models.Model):
 
     kilometers = models.CharField(max_length=50, choices=KILOMETER_CHOICES)
     reg_state = models.CharField(max_length=50, choices=STATE_CHOICES)
-    car_location = models.CharField(max_length=100)
-
+    car_location = models.OneToOneField(
+        Location,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="profile"
+    )
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     description = models.TextField(max_length=500, blank=True)
 
     is_available = models.BooleanField(default=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
