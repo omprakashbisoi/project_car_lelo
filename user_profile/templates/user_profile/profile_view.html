@@ -28,7 +28,7 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href=" {% url "dashboard" %} ">Dashboard</a>
+        <a class="nav-link" href="#">Dashboard</a>
     </li>
 
 </ul>
@@ -100,54 +100,66 @@
                     </div>
 
                     <!-- Mobile / Bio -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Mobile</label>
-                        <input type="text"
-                               name="bio"
-                               class="form-control"
-                               value="{{ profile.bio }}"
-                               placeholder="Enter Mobile Number">
-                    </div>
+                    <div class="row">
 
-                    <!-- City -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">City</label>
-                        <input type="text"
-                               name="city"
-                               class="form-control"
-                               value="{{ location.city }}"
-                               placeholder="Enter City">
-                    </div>
+                        <!-- Mobile -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Mobile Number</label>
+                            <input type="tel"
+                                name="mobile"
+                                class="form-control"
+                                value="{{ profile_form.mobile.value|default:'' }}"
+                                placeholder="Enter 10-digit mobile number"
+                                pattern="[0-9]{10}"
+                                maxlength="10"
+                                required>
+                        </div>
 
-                    <!-- State -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">State</label>
-                        <input type="text"
-                               name="state"
-                               class="form-control"
-                               value="{{ location.state }}"
-                               placeholder="Enter State">
-                    </div>
+                        <!-- City -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text"
+                                name="city"
+                                class="form-control"
+                                value="{{ location_form.city.value }}"
+                                placeholder="e.g. Mumbai"
+                                required>
+                        </div>
 
-                    <!-- PIN -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">PIN Code</label>
-                        <input type="text"
-                               name="pin"
-                               class="form-control"
-                               value="{{ location.pin }}"
-                               placeholder="Enter PIN Code">
-                    </div>
+                        <!-- State -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text"
+                                name="state"
+                                class="form-control"
+                                value="{{ location_form.state.value|default:'' }}"
+                                placeholder="e.g. Maharashtra"
+                                required>
+                        </div>
 
-                    <!-- Address -->
-                    <div class="col-md-12 mb-3">
-                        <label class="form-label">Address</label>
-                        <textarea name="address"
-                                  class="form-control"
-                                  rows="3"
-                                  placeholder="Enter Address">{{ location.address }}</textarea>
-                    </div>
+                        <!-- PIN -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">PIN Code</label>
+                            <input type="text"
+                                name="pin"
+                                class="form-control"
+                                value="{{ location_form.pin.value|default:'' }}"
+                                placeholder="6-digit PIN code"
+                                pattern="[0-9]{6}"
+                                maxlength="6"
+                                required>
+                        </div>
 
+                        <!-- Address -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea name="address"
+                                    class="form-control"
+                                    rows="3"
+                                    placeholder="House no, street, area">{{ location_form.address.value|default:'' }}</textarea>
+                        </div>
+
+                    </div>
                 </div>
 
 

@@ -17,4 +17,5 @@ urlpatterns = [
     path('dashboard/uploded_image_view/', views.uploded_image_view, name='uploded_image_view'),
     path('dashboard/uploded_image_edit/<int:image_id>/', views.uploaded_image_edit, name='uploded_image_edit'),
     path('dashboard/uploded_image_delete/<int:image_id>/', views.uploaded_image_delete, name='uploded_image_delete'),
+    path('nearby-cars/', views.nearby_cars, name='nearby_cars'),
 ]

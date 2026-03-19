@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-center">Nearby Cars</h2>
+
+    <!-- 🔔 Location Missing Alert -->
+    {% if location_missing %}
+    <div class="alert alert-warning text-center">
+        Please update your location to see nearby cars.
+        <br><br>
+        <a href="{% url 'profile' %}" class="btn btn-primary">
+            Update Location
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- 🚗 Car List -->
+    <div class="row">
+
+        {% if cars %}
+            {% for car in cars %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+
+                    <!-- Car Image (if exists) -->
+                    {% if car.image %}
+                    <img src="{{ car.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x200" class="card-img-top">
+                    {% endif %}
+
+                    <div class="card-body">
+
+                        <!-- Car Name -->
+                        <h5 class="card-title">
+                            {{ car.brand }} {{ car.car_model }}
+                        </h5>
+
+                        <!-- Variant -->
+                        <p class="text-muted mb-1">
+                            Variant: {{ car.variant }}
+                        </p>
+
+                        <!-- Price -->
+                        <p class="fw-bold text-success">
+                            ₹ {{ car.price }}
+                        </p>
+
+                        <!-- Location -->
+                        <p class="mb-1">
+                            📍 {{ car.car_location.city }}, {{ car.car_location.state }}
+                        </p>
+
+                        <!-- Distance -->
+                        <p class="text-primary">
+                            🚗 {{ car.distance|floatformat:2 }} km away
+                        </p>
+
+                        <!-- Button -->
+                        <a href="{% url 'car_detail_view' car.id %}" class="btn btn-outline-primary btn-sm w-100">
+                            View Details
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <!-- No Cars Found -->
+            <div class="col-12 text-center">
+                <h5>No nearby cars found</h5>
+                <p class="text-muted">Try updating your location or check back later.</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

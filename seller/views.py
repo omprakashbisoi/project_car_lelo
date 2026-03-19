@@ -1,8 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import CarDetailForm,ImageUploadForm
+from .forms import CarDetailForm,ImageUploadForm,LocationForm
 from .models import CarDetail,ImageStore
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from location.utils import get_lat_lon
+from django.contrib import messages
+from django.db.models import F
+from django.db.models.functions import ACos, Cos, Sin, Radians
 
 # Create your views here.
 @login_required
@@ -16,35 +20,69 @@ def seller(request):
 
 @login_required
 def car_details(request):
+
     if request.method == "POST":
-        form = CarDetailForm(request.POST)
-        if form.is_valid():
-            car = form.save(commit=False)
-            car.seller = request.user
-            car.save()
-            messages.success(request,"Car added successfully")
-            return redirect('image_upload',car_id = car.id)
+        car_form = CarDetailForm(request.POST)
+        location_form = LocationForm(request.POST)
+
+        if car_form.is_valid() and location_form.is_valid():
+
+            try:
+
+                # ---- LOCATION ----
+                location = location_form.save(commit=False)
+
+                # Validate input
+                if location.city and location.state and location.pin:
+                    lat, lng = get_lat_lon(
+                        location.city,
+                        location.state,
+                        location.pin
+                    )
+
+                    # Safe assignment
+                    if lat and lng:
+                        location.latitude = lat
+                        location.longitude = lng
+
+                location.save()
+
+                    # ---- CAR ----
+                car = car_form.save(commit=False)
+                car.seller = request.user
+                car.car_location = location
+                car.save()
+
+                messages.success(request, "Car added successfully")
+                return redirect('image_upload', car_id=car.id)
+
+            except Exception as e:
+                print("Error:", e)
+                messages.error(request, "Something went wrong. Try again.")
+
     else:
-        form = CarDetailForm()
+        car_form = CarDetailForm()
+        location_form = LocationForm()
 
     context = {
-        'form':form,
+        'car_form': car_form,
+        'location_form': location_form,
     }
-    return render(request,'seller/car_detail.html',context)
+
+    return render(request, 'seller/car_detail.html', context)
 
 
 @login_required
-def dashboard(request,user_id):
-    car_count = CarDetail.objects.filter(seller=user_id).count()
+def dashboard(request):
+    car_count = CarDetail.objects.filter(seller=request.user).count()
     context={
         'car_count':car_count,
     }
     return render(request,'seller/dashboard/dashboard.html',context)
 
 
-def detail_view(request, user_id):
-    cars = CarDetail.objects.filter(seller_id=user_id)
-
+def detail_view(request):
+    cars = CarDetail.objects.filter(seller_id=request.user)
     context = {
         'cars': cars,
     }
@@ -182,3 +220,49 @@ def uploaded_image_delete(request, image_id):
         messages.success(request, "Image deleted successfully")
 
     return redirect("uploded_image_view")
+
+def near_by_car(request):
+    user = request.user
+    profile = user.profile
+    if not hasattr(profile, 'profile_location') or not profile.profile_location:
+        messages.warning(request, "Please update your location to see nearby cars.")
+        return render(request, "nearby_cars.html", {"cars": [], "location_missing": True})
+    location = profile.profile_location
+    if not location.latitude or not location.longitude:
+        messages.warning(request, "Please update your location to see nearby cars.")
+        return render(request, "nearby_cars.html", {"cars": [], "location_missing": True})
+    user_lat  = location.latitude
+    user_lon = location.longitude
+    from django.contrib import messages
+
+def nearby_cars(request):
+    user = request.user
+    profile = user.profile
+
+    if not hasattr(profile, 'profile_location') or not profile.profile_location:
+        messages.warning(request, "Please update your location to see nearby cars.")
+        return render(request, "nearby_cars.html", {"cars": [], "location_missing": True})
+
+    location = profile.profile_location
+
+    if not location.latitude or not location.longitude:
+        messages.warning(request, "Please complete your location details.")
+        return render(request, "nearby_cars.html", {"cars": [], "location_missing": True})
+
+    user_lat = location.latitude
+    user_lon = location.longitude
+
+    cars = CarDetail.objects.filter(
+        car_location__latitude__isnull=False,
+        car_location__longitude__isnull=False
+    ).annotate(
+        distance=6371 * ACos(
+            Cos(Radians(user_lat)) *
+            Cos(Radians(F('car_location__latitude'))) *
+            Cos(Radians(F('car_location__longitude')) - Radians(user_lon)) +
+            Sin(Radians(user_lat)) *
+            Sin(Radians(F('car_location__latitude')))
+        )
+    ).order_by('distance')
+
+    return render(request, "seller/nearby_cars.html", {"cars": cars})

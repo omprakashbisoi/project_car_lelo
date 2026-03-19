@@ -8,6 +8,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from location.models import Location
+from django.core.validators import RegexValidator
 
 def image_upload_path(instance, filename):
 
@@ -33,6 +34,11 @@ class Profile(models.Model):
         
     )
     bio = models.CharField(max_length=100, blank=True, null=True)
+    mobile = models.CharField(
+        max_length=10,
+        validators=[RegexValidator(r'^\d{10}$', 'Enter a valid 10 digit PIN code')],
+        blank=True
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
