@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block content %}
+
+<!-- HERO SECTION -->
 {% comment %} <div class="jumbotron hero-section text-white"
      style="background-image:
      linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
      url('{% static "images/car_lelo_hero.jpg" %}');
      background-size: cover;
      background-position: center;">
-
-
   <div class="col-md-6 px-0">
     <h1 class="display-4">Find Your Perfect Car 🚗</h1>
     <p class="lead my-3">Buy and sell cars easily with our Django powered platform.</p>
   </div>
-
-</div> {% endcomment %}
+</div>  {% endcomment %}
 
 <!-- ===== LATEST LISTINGS ===== -->
 <div class="home-section mt-5">
@@ -23,56 +23,123 @@
 
   <div class="row">
 
-    <!-- SAMPLE CARD (Later loop from DB) -->
-{% for car in cars %}
-<div class="col-md-4 mb-4" href="#">
-      <a href="#">
+    {% for car in cars %}
+    <div class="col-md-4 mb-4">
+
+      <!-- CARD LINK -->
+      <a href="{% url 'car_detail_view' car.id %}" class="text-decoration-none text-dark">
+
         <div class="card shadow-sm rounded-4 border-0 h-100">
 
-            <!-- Image Section -->
-            <div class="position-relative bg-light rounded-top-4">
-                <img src="{% static 'images/car_lelo_hero.jpg' %}" class="card-img-top p-3" alt="Car Image">
-                <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
-                    ♡
-                </button>
+          <!-- IMAGE SECTION -->
+          <div class="position-relative bg-light rounded-top-4">
+
+            {% with car.images.all|first as first_image %}
+                {% if first_image and first_image.car_image %}
+                    <img src="{{ first_image.car_image.url }}" 
+                        class="card-img-top p-3"
+                        style="height:220px; object-fit:cover;"
+                        alt="Car Image">
+                {% else %}
+                    <img src="{% static 'images/default_car.jpg' %}" 
+                        class="card-img-top p-3"
+                        style="height:220px; object-fit:cover;"
+                        alt="No Image">
+                {% endif %}
+            {% endwith %}
+
+            <!-- WISHLIST BUTTON -->
+            <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle shadow-sm wishlist-btn"
+                    onclick="event.preventDefault(); toggleWishlist({{ car.id }})">
+
+              {% if car.id in wishlist_car_ids %}
+                <span id="wishlist-icon-{{ car.id }}">❤️</span>
+              {% else %}
+                <span id="wishlist-icon-{{ car.id }}">♡</span>
+              {% endif %}
+
+            </button>
+
+          </div>
+
+          <!-- CARD BODY -->
+          <div class="card-body">
+
+            <span class="badge bg-primary-subtle text-primary mb-2">
+              Car Lelo Owned Stock
+            </span>
+
+            <h6 class="fw-bold">
+              {{ car.year }} {{ car.brand }} {{ car.car_model }} {{ car.variant }}
+            </h6>
+
+            <!-- SPECS -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span class="badge bg-light text-dark">
+                {{ car.kilometers }} km
+              </span>
+              <span class="badge bg-light text-dark">
+                {{ car.fuel_type }}
+              </span>
             </div>
 
-            <!-- Card Body -->
-            <div class="card-body">
+            <!-- PRICE -->
+            <h5 class="fw-bold text-dark">
+              ₹ {{ car.price }}
+            </h5>
 
-                <span class="badge bg-primary-subtle text-primary mb-2">
-                    Car Lelo Owned Stock
-                </span>
+            <!-- LOCATION -->
+            <p class="text-muted small mb-0">
+              📍 {{ car.car_location }}
+            </p>
 
-                <h6 class="fw-bold">
-                    {{ car.year }} {{ car.brand }} {{ car.car_model }} {{ car.variant }}
-                </h6>
+          </div>
 
-                <!-- Specs -->
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                    <span class="badge bg-light text-dark">
-                        {{ car.kilometers }}
-                    </span>
-                    <span class="badge bg-light text-dark">
-                        {{ car.fuel_type }}
-                    </span>
-                </div>
-
-                <!-- Price -->
-                <h5 class="fw-bold text-dark">
-                    ₹ {{ car.price }}
-                </h5>
-
-                <!-- Location -->
-                <p class="text-muted small mb-0">
-                    📍 {{ car.car_location }}
-                </p>
-            </div>
         </div>
       </a>
     </div>
-{% endfor %}
+    {% endfor %}
+
   </div>
 </div>
+
+<!-- ================= JS ================= -->
+<script>
+function toggleWishlist(carId) {
+    fetch(`/wishlist/toggle/${carId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const icon = document.getElementById(`wishlist-icon-${carId}`);
+
+        if (data.status === "added") {
+            icon.innerHTML = "❤️";
+        } else if (data.status === "removed") {
+            icon.innerHTML = "♡";
+        }
+    });
+}
+
+// CSRF TOKEN
+function getCSRFToken() {
+    return document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken'))
+        ?.split('=')[1];
+}
+</script>
+
+<!-- ================= CSS ================= -->
+<style>
+.wishlist-btn:hover {
+    transform: scale(1.1);
+    transition: 0.2s;
+}
+</style>
 
 {% endblock %}

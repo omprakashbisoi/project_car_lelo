@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .car-image {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+
+    .thumb-img {
+        width: 85px;
+        height: 65px;
+        object-fit: cover;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: 0.3s;
+    }
+
+    .thumb-img:hover {
+        transform: scale(1.05);
+        border: 2px solid #ff6b00;
+    }
+
+    .tag {
+        background: #eef1f4;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        margin-right: 6px;
+        font-weight: 500;
+    }
+
+    .price-box {
+        background: #fff;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0px 6px 20px rgba(0,0,0,0.06);
+        position: sticky;
+        top: 90px;
+    }
+
+    .btn-orange {
+        background: linear-gradient(45deg, #ff6b00, #ff8c42);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .btn-orange:hover {
+        opacity: 0.9;
+    }
+
+    .card-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .wishlist-btn {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+        box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
+        cursor: pointer;
+    }
+
+    .wishlist-active {
+        color: red;
+    }
+
+    .section-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="row g-4">
+
+        <!-- LEFT SECTION -->
+        <div class="col-md-7 position-relative card-box">
+
+            <!-- ❤️ Wishlist -->
+                <form action="{% url 'add_remove_wish' car.id %}" method="POST">
+                    {% csrf_token %}
+                    <button class="wishlist-btn">
+                        {% if is_wishlisted %}
+                            ♥
+                        {% else %}
+                            ♡
+                        {% endif %}
+                    </button>
+                </form>
+
+            <!-- MAIN IMAGE -->
+            {% if imgs %}
+                <img id="mainImage" src="{{ imgs.first.car_image.url }}" class="car-image mb-3">
+            {% else %}
+                <img src="{% static 'images/default-car.jpg' %}" class="car-image">
+            {% endif %}
+
+            <!-- THUMBNAILS -->
+            <div class="d-flex flex-wrap">
+                {% for img in imgs %}
+                    {% if img.car_image %}
+                        <img src="{{ img.car_image.url }}" 
+                             class="thumb-img"
+                             onclick="changeImage(this)">
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+
+        <!-- RIGHT SECTION -->
+        <div class="col-md-5">
+
+            <!-- DETAILS CARD -->
+            <div class="card-box">
+
+                <h3 class="mb-1">{{ car.brand }} {{ car.model }}</h3>
+                <p class="text-muted">{{ car.year }}</p>
+
+                <!-- TAGS -->
+                <div class="mb-3">
+                    <span class="tag">{{ car.kilometers }} km</span>
+                    <span class="tag">Manual</span>
+                    <span class="tag">{{ car.fuel_type }}</span>
+                    <span class="tag">{{ car.variant }}</span>
+                </div>
+
+                <!-- LOCATION -->
+                <p class="text-muted mb-2">
+                    📍 {{ car.car_location.city }}, {{ car.car_location.state }}
+                </p>
+
+            </div>
+
+            <!-- PRICE CARD -->
+            <div class="price-box mt-3">
+
+                <h3>₹{{ car.price }}</h3>
+                <p class="text-muted">+ other charges</p>
+
+                <hr>
+
+                <button class="btn btn-orange w-100 mt-2">
+                    Contact Seller
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- JS -->
+<script>
+function changeImage(element) {
+    document.getElementById("mainImage").src = element.src;
+}
+
+function toggleWishlist(carId) {
+    let icon = document.getElementById(`wishlist-icon-${carId}`);
+
+    if (icon.innerText === "♡") {
+        icon.innerText = "♥";
+        icon.classList.add("wishlist-active");
+    } else {
+        icon.innerText = "♡";
+        icon.classList.remove("wishlist-active");
+    }
+}
+</script>
+
+{% endblock %}
