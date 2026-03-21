@@ -3,188 +3,174 @@
 
 <div class="container mt-5">
 
-```
-<!-- NAVIGATION TABS -->
-<ul class="nav nav-tabs mb-4">
+    <!-- TOP BAR -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h3 class="fw-bold">My Profile</h3>
 
-    <li class="nav-item">
-        <a class="nav-link active" href="#">Edit Profile</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">Wishlist</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">Orders</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">Bookings</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">Sell</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">Dashboard</a>
-    </li>
-
-</ul>
+        {% comment %} {% if user.profile.role == "seller" %}
+        {% endif %} {% endcomment %}
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+            Go to Dashboard →
+        </a>
+    </div>
 
 
-<div class="row">
+    <!-- NAVIGATION PILLS -->
+    <ul class="nav nav-pills mb-4 gap-2">
 
-    <!-- LEFT PROFILE CARD -->
-    <div class="col-md-3">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Edit Profile</a>
+        </li>
 
-        <div class="card shadow text-center p-4">
+        <li class="nav-item">
+            <a class="nav-link" href=" {% url "wishlist" %} ">Wishlist</a>
+        </li>
 
-            {% if profile.profile_image %}
-            <img src="{{ profile.profile_image.url }}"
-                 class="rounded-circle mx-auto mb-3"
-                 width="120"
-                 height="120"
-                 style="object-fit:cover;">
-            {% else %}
-            <img src="https://via.placeholder.com/120"
-                 class="rounded-circle mx-auto mb-3">
-            {% endif %}
-            
-            <hr>
-            <!-- Profile profile_Image -->
-                <div class="col-md-14 mb-1">
+        <li class="nav-item">
+            <a class="nav-link" href="#">Orders</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">Bookings</a>
+        </li>
+
+    </ul>
+
+
+    <div class="row g-4">
+
+        <!-- LEFT PROFILE CARD -->
+        <div class="col-md-4 col-lg-3">
+
+            <div class="card shadow-sm border-0 text-center p-4">
+
+                {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}"
+                     class="rounded-circle mx-auto mb-3 border"
+                     width="120"
+                     height="120"
+                     style="object-fit:cover;">
+                {% else %}
+                <img src="https://via.placeholder.com/120"
+                     class="rounded-circle mx-auto mb-3 border">
+                {% endif %}
+
+                <h5 class="fw-semibold">{{ user.username }}</h5>
+                <p class="text-muted small mb-3">{{ user.email }}</p>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
                     <input type="file"
                            name="profile_image"
-                           class="form-control">
-                </div>
+                           class="form-control form-control-sm mb-3">
+                </form>
 
-            <a href="{% url 'logout' %}" class="btn btn-danger w-100">
-                Sign Out
-            </a>
+                <a href="{% url 'logout' %}" class="btn btn-danger w-100">
+                    Sign Out
+                </a>
+
+            </div>
 
         </div>
 
-    </div>
 
+        <!-- RIGHT PROFILE FORM -->
+        <div class="col-md-8 col-lg-9">
 
-    <!-- RIGHT PROFILE FORM -->
-    <div class="col-md-9">
+            <div class="card shadow-sm border-0 p-4">
 
-        <div class="card shadow p-4">
+                <h5 class="mb-4 fw-bold">Profile Details</h5>
 
-            <h4 class="mb-4">Profile Details</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
+                    <div class="row g-3">
 
-                <div class="row">
-
-                    <!-- Username -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Username</label>
-                        <input class="form-control"
-                               value="{{ user.username }}"
-                               readonly>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email"
-                               name="email"
-                               class="form-control"
-                               value="{{ user.email }}"
-                               readonly>
-                    </div>
-
-                    <!-- Mobile / Bio -->
-                    <div class="row">
-
-                        <!-- Mobile -->
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Mobile Number</label>
-                            <input type="tel"
-                                name="mobile"
-                                class="form-control"
-                                value="{{ profile_form.mobile.value|default:'' }}"
-                                placeholder="Enter 10-digit mobile number"
-                                pattern="[0-9]{10}"
-                                maxlength="10"
-                                required>
+                        <div class="col-md-6">
+                            <label class="form-label">Username</label>
+                            <input class="form-control"
+                                   value="{{ user.username }}"
+                                   readonly>
                         </div>
 
-                        <!-- City -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email"
+                                   class="form-control"
+                                   value="{{ user.email }}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Mobile</label>
+                            <input type="tel"
+                                   name="mobile"
+                                   class="form-control"
+                                   value="{{ profile_form.mobile.value|default:'' }}"
+                                   placeholder="Enter mobile"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="form-label">City</label>
                             <input type="text"
-                                name="city"
-                                class="form-control"
-                                value="{{ location_form.city.value }}"
-                                placeholder="e.g. Mumbai"
-                                required>
+                                   name="city"
+                                   class="form-control"
+                                   value="{{ location_form.city.value }}"
+                                   placeholder="City"
+                                   required>
                         </div>
 
-                        <!-- State -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label class="form-label">State</label>
                             <input type="text"
-                                name="state"
-                                class="form-control"
-                                value="{{ location_form.state.value|default:'' }}"
-                                placeholder="e.g. Maharashtra"
-                                required>
+                                   name="state"
+                                   class="form-control"
+                                   value="{{ location_form.state.value|default:'' }}"
+                                   required>
                         </div>
 
-                        <!-- PIN -->
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">PIN Code</label>
+                        <div class="col-md-6">
+                            <label class="form-label">PIN</label>
                             <input type="text"
-                                name="pin"
-                                class="form-control"
-                                value="{{ location_form.pin.value|default:'' }}"
-                                placeholder="6-digit PIN code"
-                                pattern="[0-9]{6}"
-                                maxlength="6"
-                                required>
+                                   name="pin"
+                                   class="form-control"
+                                   value="{{ location_form.pin.value|default:'' }}"
+                                   required>
                         </div>
 
-                        <!-- Address -->
-                        <div class="col-md-12 mb-3">
+                        <div class="col-12">
                             <label class="form-label">Address</label>
                             <textarea name="address"
-                                    class="form-control"
-                                    rows="3"
-                                    placeholder="House no, street, area">{{ location_form.address.value|default:'' }}</textarea>
+                                      class="form-control"
+                                      rows="3">{{ location_form.address.value|default:'' }}</textarea>
                         </div>
 
                     </div>
-                </div>
 
+                    <!-- ACTIONS -->
+                    <div class="d-flex justify-content-between mt-4">
 
-                <!-- ACTION BUTTONS -->
-                <div class="d-flex justify-content-between mt-3">
-
-                    <form method="POST" action="{% url 'delete_profile' %}">
+                        <form method="POST" action="{% url 'delete_profile' %}">
                             {% csrf_token %}
-                            <button type="submit">Delete Profile</button>
+                            <button class="btn btn-outline-danger">
+                                Delete Profile
+                            </button>
                         </form>
 
-                    <button type="submit" class="btn btn-primary">
-                        Update Profile
-                    </button>
+                        <button type="submit" class="btn btn-primary px-4">
+                            Save Changes
+                        </button>
 
-                </div>
+                    </div>
 
-            </form>
+                </form>
+
+            </div>
 
         </div>
 
     </div>
-
-</div>
-```
 
 </div>
 

@@ -20,11 +20,9 @@ def seller(request):
 
 @login_required
 def car_details(request):
-
     if request.method == "POST":
         car_form = CarDetailForm(request.POST)
         location_form = LocationForm(request.POST)
-
         if car_form.is_valid() and location_form.is_valid():
 
             try:
@@ -74,7 +72,8 @@ def car_details(request):
 
 @login_required
 def dashboard(request):
-    car_count = CarDetail.objects.filter(seller=request.user).count()
+    user = request.user
+    car_count = CarDetail.objects.filter(seller=user).count()
     context={
         'car_count':car_count,
     }
@@ -82,7 +81,7 @@ def dashboard(request):
 
 
 def detail_view(request):
-    cars = CarDetail.objects.filter(seller_id=request.user)
+    cars = CarDetail.objects.filter(seller=request.user)
     context = {
         'cars': cars,
     }
@@ -103,7 +102,7 @@ def edit_car(request,car_id):
         if form.is_valid():
             updated_car = form.save()
             messages.success(request,"Car updated successfully")
-            return redirect('detail_view',user_id=request.user.id)
+            return redirect('detail_view')
     else:
         form = CarDetailForm(instance=car)
 
@@ -126,7 +125,7 @@ def delete_car(request,car_id):
     car.delete()
     messages.success(request,"Car deleted successfully")
 
-    return redirect('detail_view',user_id=request.user)
+    return redirect('detail_view')
 
 
 @login_required

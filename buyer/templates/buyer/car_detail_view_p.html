@@ -5,7 +5,22 @@
 
 <style>
     body {
-        background-color: #f8f9fa;
+        background-color: #f6f7fb;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ===== CONTAINER ===== */
+    .main-container {
+        margin-top: 30px;
+    }
+
+    /* ===== IMAGE SECTION ===== */
+    .image-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+        position: relative;
     }
 
     .car-image {
@@ -13,135 +28,192 @@
         height: 420px;
         object-fit: cover;
         border-radius: 14px;
+        transition: 0.4s;
+    }
+
+    .thumb-container {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
     .thumb-img {
-        width: 85px;
-        height: 65px;
+        width: 80px;
+        height: 60px;
         object-fit: cover;
         border-radius: 10px;
         cursor: pointer;
-        margin-right: 10px;
+        opacity: 0.7;
+        border: 2px solid transparent;
         transition: 0.3s;
     }
 
-    .thumb-img:hover {
-        transform: scale(1.05);
+    .thumb-img:hover,
+    .thumb-img.active {
+        opacity: 1;
         border: 2px solid #ff6b00;
+        transform: scale(1.05);
     }
 
-    .tag {
-        background: #eef1f4;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        margin-right: 6px;
-        font-weight: 500;
-    }
-
-    .price-box {
-        background: #fff;
-        padding: 25px;
-        border-radius: 16px;
-        box-shadow: 0px 6px 20px rgba(0,0,0,0.06);
-        position: sticky;
-        top: 90px;
-    }
-
-    .btn-orange {
-        background: linear-gradient(45deg, #ff6b00, #ff8c42);
-        color: #fff;
-        border-radius: 10px;
-        padding: 12px;
-        font-weight: 600;
-        border: none;
-    }
-
-    .btn-orange:hover {
-        opacity: 0.9;
-    }
-
-    .card-box {
-        background: #fff;
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
-    }
-
+    /* ===== WISHLIST ===== */
     .wishlist-btn {
         position: absolute;
-        top: 20px;
-        right: 25px;
-        background: white;
+        top: 15px;
+        right: 15px;
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.7);
         border: none;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        font-size: 20px;
-        box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
-        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
     }
 
-    .wishlist-active {
-        color: red;
+    .wishlist-btn:hover {
+        transform: scale(1.08);
     }
 
-    .section-title {
+    /* ===== DETAILS ===== */
+    .details-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    }
+
+    .car-title {
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    .car-sub {
+        color: #777;
+        font-size: 14px;
+    }
+
+    /* ===== TAGS ===== */
+    .tag {
+        background: #f1f3f6;
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-right: 6px;
+        margin-bottom: 6px;
+        display: inline-block;
+    }
+
+    /* ===== PRICE BOX ===== */
+    .price-box {
+        background: #fff;
+        padding: 24px;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+        position: sticky;
+        top: 100px;
+    }
+
+    .price {
+        font-size: 30px;
+        font-weight: 700;
+        color: #111;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #ff6b00, #ff8c42);
+        border: none;
+        padding: 14px;
+        border-radius: 12px;
         font-weight: 600;
-        margin-bottom: 10px;
+        color: #fff;
+        transition: 0.3s;
     }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(255,107,0,0.3);
+    }
+
+    /* ===== LOCATION ===== */
+    .location {
+        font-size: 14px;
+        color: #666;
+        margin-top: 8px;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 768px) {
+        .car-image {
+            height: 260px;
+        }
+
+        .price-box {
+            position: static;
+            margin-top: 15px;
+        }
+    }
+
 </style>
 
-<div class="container mt-4">
+<div class="container main-container">
 
     <div class="row g-4">
 
-        <!-- LEFT SECTION -->
-        <div class="col-md-7 position-relative card-box">
+        <!-- LEFT -->
+        <div class="col-lg-7">
 
-            <!-- ❤️ Wishlist -->
+            <div class="image-card">
+
+                <!-- WISHLIST -->
                 <form action="{% url 'add_remove_wish' car.id %}" method="POST">
                     {% csrf_token %}
                     <button class="wishlist-btn">
                         {% if is_wishlisted %}
-                            ♥
+                            <i class="bi bi-heart-fill text-danger fs-5"></i>
                         {% else %}
-                            ♡
+                            <i class="bi bi-heart fs-5"></i>
                         {% endif %}
                     </button>
                 </form>
 
-            <!-- MAIN IMAGE -->
-            {% if imgs %}
-                <img id="mainImage" src="{{ imgs.first.car_image.url }}" class="car-image mb-3">
-            {% else %}
-                <img src="{% static 'images/default-car.jpg' %}" class="car-image">
-            {% endif %}
+                <!-- MAIN IMAGE -->
+                {% if imgs %}
+                    <img id="mainImage" src="{{ imgs.first.car_image.url }}" class="car-image">
+                {% else %}
+                    <img src="{% static 'images/default-car.jpg' %}" class="car-image">
+                {% endif %}
 
-            <!-- THUMBNAILS -->
-            <div class="d-flex flex-wrap">
-                {% for img in imgs %}
-                    {% if img.car_image %}
-                        <img src="{{ img.car_image.url }}" 
-                             class="thumb-img"
-                             onclick="changeImage(this)">
-                    {% endif %}
-                {% endfor %}
+                <!-- THUMB -->
+                <div class="thumb-container">
+                    {% for img in imgs %}
+                        {% if img.car_image %}
+                            <img src="{{ img.car_image.url }}"
+                                 class="thumb-img"
+                                 onclick="changeImage(this)">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
             </div>
 
         </div>
 
-        <!-- RIGHT SECTION -->
-        <div class="col-md-5">
+        <!-- RIGHT -->
+        <div class="col-lg-5">
 
-            <!-- DETAILS CARD -->
-            <div class="card-box">
+            <!-- DETAILS -->
+            <div class="details-card">
 
-                <h3 class="mb-1">{{ car.brand }} {{ car.model }}</h3>
-                <p class="text-muted">{{ car.year }}</p>
+                <div class="car-title">{{ car.brand }} {{ car.model }}</div>
+                <div class="car-sub">{{ car.year }}</div>
 
                 <!-- TAGS -->
-                <div class="mb-3">
+                <div class="mt-3">
                     <span class="tag">{{ car.kilometers }} km</span>
                     <span class="tag">Manual</span>
                     <span class="tag">{{ car.fuel_type }}</span>
@@ -149,21 +221,21 @@
                 </div>
 
                 <!-- LOCATION -->
-                <p class="text-muted mb-2">
+                <div class="location">
                     📍 {{ car.car_location.city }}, {{ car.car_location.state }}
-                </p>
+                </div>
 
             </div>
 
-            <!-- PRICE CARD -->
+            <!-- PRICE -->
             <div class="price-box mt-3">
 
-                <h3>₹{{ car.price }}</h3>
-                <p class="text-muted">+ other charges</p>
+                <div class="price">₹ {{ car.price }}</div>
+                <div class="text-muted">Inclusive of all charges</div>
 
                 <hr>
 
-                <button class="btn btn-orange w-100 mt-2">
+                <button class="btn btn-primary-custom w-100 mt-2">
                     Contact Seller
                 </button>
 
@@ -179,18 +251,12 @@
 <script>
 function changeImage(element) {
     document.getElementById("mainImage").src = element.src;
-}
 
-function toggleWishlist(carId) {
-    let icon = document.getElementById(`wishlist-icon-${carId}`);
+    document.querySelectorAll(".thumb-img").forEach(img => {
+        img.classList.remove("active");
+    });
 
-    if (icon.innerText === "♡") {
-        icon.innerText = "♥";
-        icon.classList.add("wishlist-active");
-    } else {
-        icon.innerText = "♡";
-        icon.classList.remove("wishlist-active");
-    }
+    element.classList.add("active");
 }
 </script>
 

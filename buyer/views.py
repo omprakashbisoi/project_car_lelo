@@ -49,7 +49,7 @@ def car_detail_view(request, car_id):
     imgs = ImageStore.objects.filter(car=car)
     is_wishlisted = False
     if request.user.is_authenticated:
-        is_wishlisted = Wishlist.objects.filter(user=request.user, car=car).exists
+        is_wishlisted = Wishlist.objects.filter(user=request.user, car=car).exists()
     return render(request, 'buyer/car_detail_view_p.html', {
         "car": car,
         "imgs": imgs,
