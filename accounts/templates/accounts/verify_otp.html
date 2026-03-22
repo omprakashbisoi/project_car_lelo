@@ -3,21 +3,68 @@
 
 {% block content %}
 
-<h3 class="text-center">Verify your OTP</h3>
+<div class="container-fluid" style="
+    min-height: 90vh;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    url('/static/images/car-bg.jpg');
+    background-size: cover;
+    background-position: center;
+">
 
-<form method="POST" style="width: 500px; margin:auto;" action="{% url 'email_verify_otp' %}">
-    {% csrf_token %}
+    <div class="row justify-content-center align-items-center" style="min-height: 90vh;">
 
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            {{ form.errors }}
+        <div class="col-md-4">
+
+            <div class="card shadow-lg p-4" style="border-radius: 12px;">
+
+                <h3 class="text-center mb-3">Verify OTP</h3>
+                <p class="text-center text-muted mb-4">
+                    Enter the 6-digit code sent to your email
+                </p>
+
+                <form method="POST" action="{% url 'email_verify_otp' %}">
+                    {% csrf_token %}
+
+                    <!-- GLOBAL ERROR -->
+                    {% if error %}
+                        <div class="alert alert-danger text-center">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <!-- FORM ERRORS -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger text-center">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <!-- OTP INPUT -->
+                    <div class="form-group mb-3">
+                        {{ form.otp }}
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <button type="submit" class="btn btn-warning w-100">
+                        Verify OTP
+                    </button>
+
+                    <!-- RESEND -->
+                    <div class="text-center mt-3">
+                        <small>
+                            Didn’t receive OTP?
+                            <a href="#" class="text-decoration-none">Resend</a>
+                        </small>
+                    </div>
+
+                </form>
+
+            </div>
+
         </div>
-    {% endif %}
 
+    </div>
 
-    {{ form|crispy }}
-
-    <button type="submit" class="btn btn-primary w-100">Submit</button>
-</form>
+</div>
 
 {% endblock %}

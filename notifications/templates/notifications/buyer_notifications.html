@@ -1,0 +1,22 @@
+{% for req in buyer_requests %}
+<div class="card p-3 mb-3 shadow-sm rounded-3">
+
+    <h5>{{ req.car.brand }} {{ req.car.car_model }}</h5>
+
+    {% if req.status == 'accepted' %}
+        <p class="text-success fw-bold">Seller Accepted ✅</p>
+        <p>Contact: {{ req.seller.email }}</p>
+
+    {% elif req.status == 'rejected' %}
+        <p class="text-danger fw-bold">Rejected ❌</p>
+
+    {% else %}
+        <p class="text-warning fw-bold">Pending ⏳</p>
+    {% endif %}
+
+    <small class="text-muted">{{ req.created_at }}</small>
+
+</div>
+{% empty %}
+<p>No buyer notifications</p>
+{% endfor %}

@@ -1,0 +1,23 @@
+{% for req in seller_requests %}
+<div class="card p-3 mb-3 shadow-sm rounded-3">
+
+    <h5>{{ req.buyer.username }} is interested</h5>
+    <p>{{ req.car.car_name }}</p>
+
+    {% if req.status == 'pending' %}
+        <a href="{% url 'notifications:accept_request' req.id %}" class="btn btn-success btn-sm">Yes</a>
+        <a href="{% url 'notifications:reject_request' req.id %}" class="btn btn-danger btn-sm">No</a>
+
+    {% elif req.status == 'accepted' %}
+        <p class="text-success fw-bold">Accepted ✅</p>
+
+    {% else %}
+        <p class="text-danger fw-bold">Rejected ❌</p>
+    {% endif %}
+
+    <small class="text-muted">{{ req.created_at }}</small>
+
+</div>
+{% empty %}
+<p>No seller notifications</p>
+{% endfor %}

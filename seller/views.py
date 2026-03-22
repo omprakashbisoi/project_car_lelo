@@ -50,7 +50,8 @@ def car_details(request):
                 car.seller = request.user
                 car.car_location = location
                 car.save()
-
+                request.user.role = 'seller'
+                request.user.save()
                 messages.success(request, "Car added successfully")
                 return redirect('image_upload', car_id=car.id)
 

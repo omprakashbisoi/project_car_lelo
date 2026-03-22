@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib import auth
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import auth
 
 from .utils import generate_otp
 from .models import EmailOTP, CustomUser, PasswordResetOTP
@@ -16,62 +16,73 @@ from .forms import (
     EmailForm,
     NewPasswordForm
 )
-# Create your views here.
 
-def resistaion_for_u_e(request):
+# ==========================
+# 🔹 REGISTRATION FLOW
+# ==========================
+
+def registration_view(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
+
         if form.is_valid():
             email = form.cleaned_data['email']
+
             otp = generate_otp()
             expiry = timezone.now() + timedelta(minutes=5)
-            try:
-                otp_obj = EmailOTP.objects.get(email=email)
 
-                # If already exists → check resend limit
+            otp_obj = EmailOTP.objects.filter(email=email).first()
+
+            if otp_obj:
+                # 🔹 Resend limit check
                 if otp_obj.resend_count >= 3:
-                    return render(
-                        request,
-                        'accounts/resistation.html',
-                        {'form': form, 'error': "Resend limit reached"}
-                    )
+                    return render(request, 'accounts/registration.html', {
+                        'form': form,
+                        'error': "Resend limit reached. Try later."
+                    })
 
+                # 🔹 Update existing OTP
+                otp_obj.otp = otp
+                otp_obj.expiry_time = expiry
                 otp_obj.resend_count += 1
+                otp_obj.is_verified = False
 
-            except EmailOTP.DoesNotExist:
-                # First time → create new record
-                otp_obj = EmailOTP(
+            else:
+                # 🔹 Create new OTP (IMPORTANT: expiry_time included)
+                otp_obj = EmailOTP.objects.create(
                     email=email,
-                    resend_count=1
+                    otp=otp,
+                    expiry_time=expiry,
+                    resend_count=1,
+                    is_verified=False
                 )
-            otp_obj.otp = otp
-            otp_obj.expiry_time = expiry
-            otp_obj.is_verified = False
+
             otp_obj.save()
 
-
+            # 🔹 Send Email
             send_mail(
                 subject='Your OTP code',
                 message=f'Your OTP is {otp}. It is valid for 5 minutes.',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
             )
+
             request.session['pending_email'] = email
-            return redirect('verify_otp')
+
+            return redirect('email_verify_otp')
 
     else:
         form = RegistrationForm()
 
     return render(request, "accounts/resistation.html", {'form': form})
 
-
-
+# --------------------------
 
 def email_verify_otp(request):
     email = request.session.get('pending_email')
 
     if not email:
-        return redirect('resistaion_for_u_e')
+        return redirect('register')
 
     if request.method == "POST":
         form = OTPVerificationForm(request.POST)
@@ -82,31 +93,29 @@ def email_verify_otp(request):
             try:
                 otp_obj = EmailOTP.objects.get(email=email)
             except EmailOTP.DoesNotExist:
-                return render(
-                    request,
-                    "accounts/verify_otp.html",
-                    {'form': form, 'error': "Invalid Email"}
-                )
+                return render(request, "accounts/verify_otp.html", {
+                    'form': form,
+                    'error': "Something went wrong. Please register again."
+                })
 
+            # 🔹 Expiry check
             if otp_obj.is_expired():
-                return render(
-                    request,
-                    "accounts/verify_otp.html",
-                    {'form': form, 'error': "OTP expired"}
-                )
+                return render(request, "accounts/verify_otp.html", {
+                    'form': form,
+                    'error': "OTP expired"
+                })
 
+            # 🔹 OTP match check
             if otp_obj.otp != user_otp:
-                return render(
-                    request,
-                    "accounts/verify_otp.html",
-                    {'form': form, 'error': "Invalid OTP"}
-                )
+                return render(request, "accounts/verify_otp.html", {
+                    'form': form,
+                    'error': "Invalid OTP"
+                })
 
-            
+            # 🔹 Success
             otp_obj.is_verified = True
             otp_obj.save()
 
-            
             request.session['verified_email'] = email
             del request.session['pending_email']
 
@@ -118,13 +127,13 @@ def email_verify_otp(request):
     return render(request, "accounts/verify_otp.html", {'form': form})
 
 
+# --------------------------
 
-def complete_resistaion(request):
-
+def complete_registration(request):
     verified_email = request.session.get('verified_email')
 
     if not verified_email:
-        return redirect('registration')
+        return redirect('register')
 
     if request.method == "POST":
         form = CompleteRegistrationForm(request.POST)
@@ -132,28 +141,15 @@ def complete_resistaion(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.email = verified_email
-
             user.save()
 
-            # Clean session
             del request.session['verified_email']
 
-            # Send welcome mail
-            subject = "Welcome to Car Lelo 🚗"
-            message = f"""
-Hi {user.first_name},
-
-Your account has been successfully created.
-
-Welcome to Car Lelo!
-"""
-
             send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-                fail_silently=False,
+                subject="Welcome to Car Lelo 🚗",
+                message=f"Hi {user.first_name}, your account is ready!",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
             )
 
             auth.login(request, user)
@@ -163,244 +159,249 @@ Welcome to Car Lelo!
     else:
         form = CompleteRegistrationForm()
 
-    return render(
-        request,
-        'accounts/complete_registration.html',
-        {'form': form}
-    )
+    return render(request, 'accounts/complete_registration.html', {'form': form})
+
+
+# ==========================
+# 🔹 LOGIN / LOGOUT
+# ==========================
+
 def user_login(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
+
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(request,username=username,password=password)
-            if user is not None:
-                login(request,user)
-                return redirect('buyer')
-            else:
-                return render(request,"accounts/login.html",{'form': form, 'error': "Invalid credentials"})     
+
+            user = authenticate(request, username=username, password=password)
+
+            if user:
+                login(request, user)
+
+                if user.role == "seller":
+                    return redirect("seller_dashboard")
+                else:
+                    return redirect("buyer")
+
+            return render(request, "accounts/login.html", {
+                'form': form,
+                'error': "Invalid credentials"
+            })
+
     else:
         form = LoginForm()
-    return render(request,'accounts/login.html',{'form':form})
+
+    return render(request, 'accounts/login.html', {'form': form})
+
 
 def user_logout(request):
     logout(request)
     return redirect('login')
-from django.utils import timezone
-from datetime import timedelta
 
-def forget_password_email_verification(request):
 
+# ==========================
+# 🔹 FORGOT PASSWORD FLOW
+# ==========================
+
+def forget_password_view(request):
     if request.method == "POST":
         form = EmailForm(request.POST)
 
         if form.is_valid():
             email = form.cleaned_data['email']
 
+            # SECURITY SAFE RESPONSE
             try:
                 user = CustomUser.objects.get(email=email)
-
-                last_otp = PasswordResetOTP.objects.filter(user=user).last()
-
-                if last_otp and last_otp.resend_count >= 3:
-                    return render(
-                        request,
-                        "accounts/login.html",
-                        {'form': form, 'error': 'Resend limit reached'}
-                    )
 
                 otp = generate_otp()
                 expiry = timezone.now() + timedelta(minutes=3)
 
-                otp_obj = PasswordResetOTP.objects.create(
-                    user=user,
-                    otp=otp,
-                    expiry_time=expiry,
-                )
+                otp_obj = PasswordResetOTP.objects.filter(user=user).last()
 
-                otp_obj.resend_count += 1
+                if otp_obj and otp_obj.resend_count >= 3:
+                    return render(request, "accounts/password_reset.html", {
+                        "form": form,
+                        "error": "Too many attempts. Try later."
+                    })
+
+                otp = generate_otp()
+                expiry = timezone.now() + timedelta(minutes=3)
+
+                if otp_obj:
+                    # update existing
+                    otp_obj.otp = otp
+                    otp_obj.expiry_time = expiry
+                    otp_obj.resend_count += 1
+                    otp_obj.is_verified = False
+                else:
+                    # create new
+                    otp_obj = PasswordResetOTP.objects.create(
+                        user=user,
+                        otp=otp,
+                        expiry_time=expiry,
+                        resend_count=1
+                    )
+
                 otp_obj.save()
 
                 send_mail(
                     subject='Password Reset OTP',
-                    message=f'Your OTP is {otp}. It is valid for 3 minutes.',
+                    message=f'Your OTP is {otp}. Valid for 3 minutes.',
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[email],
                 )
 
                 request.session["reset_user"] = user.id
 
-                return redirect("verify_otp")
-
             except CustomUser.DoesNotExist:
-                form.add_error("email", "Email not registered")
+                pass  # Do nothing (security)
+
+            return redirect("password_verify_otp")
 
     else:
         form = EmailForm()
 
-    return render(request, "accounts/password_reset.html", {"form": form,})
+    return render(request, "accounts/password_reset.html", {"form": form})
 
 
+# --------------------------
 
+def password_verify_otp(request):
+    user_id = request.session.get("reset_user")
 
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from datetime import timedelta
-from .forms import OTPVerificationForm
-from .models import PasswordResetOTP
-from .models import CustomUser
+    if not user_id:
+        return redirect("forget_password")
 
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from datetime import timedelta
-from .forms import OTPVerificationForm
-from .models import PasswordResetOTP, CustomUser
-
-def verify_otp(request):
-    reset_user_id = request.session.get("reset_user")
-    if not reset_user_id:
-        return redirect("forgot_password")
-
-    user = CustomUser.objects.get(id=reset_user_id)
+    user = CustomUser.objects.get(id=user_id)
 
     if request.method == "POST":
         form = OTPVerificationForm(request.POST)
+
         if form.is_valid():
             entered_otp = form.cleaned_data["otp"]
 
-            last_otp = PasswordResetOTP.objects.filter(user=user).last()
-            if not last_otp:
+            otp_obj = PasswordResetOTP.objects.filter(user=user).last()
+
+            if not otp_obj:
                 return render(request, "accounts/password_reset_confirm.html", {
                     "form": form,
-                    "error": "No OTP found. Please request a new OTP."
+                    "error": "Request new OTP"
                 })
 
-            # Cooldown check
-            if last_otp.resend_count >= 3:
-                cooldown_time = last_otp.created_at + timedelta(hours=2)
-                if timezone.now() < cooldown_time:
-                    return render(request, "accounts/password_reset_confirm.html", {
-                        "form": form,
-                        "error": "Resend limit reached. Try again after 2 hours."
-                    })
-
-            # Expiry check
-            if last_otp.is_expired():
+            if otp_obj.is_expired():
                 return render(request, "accounts/password_reset_confirm.html", {
                     "form": form,
-                    "error": "OTP has expired. Please request a new one."
+                    "error": "OTP expired"
                 })
 
-            # OTP match
-            if last_otp.otp != entered_otp:
+            if otp_obj.otp != entered_otp:
                 return render(request, "accounts/password_reset_confirm.html", {
                     "form": form,
-                    "error": "Invalid OTP entered."
+                    "error": "Invalid OTP"
                 })
 
-            # OTP correct
-            last_otp.is_verified = True
-            last_otp.save()
+            otp_obj.is_verified = True
+            otp_obj.save()
+
             request.session["otp_verified"] = True
+
             return redirect("reset_password")
-        else:
-            # Form invalid (blank)
-            return render(request, "accounts/password_reset_confirm.html", {
-                "form": form,
-                "error": "OTP field cannot be blank."
-            })
+
     else:
         form = OTPVerificationForm()
 
     return render(request, "accounts/password_reset_confirm.html", {"form": form})
 
+
+# --------------------------
+
 def resend_otp(request):
-    reset_user = request.session.get("reset_user")
-    if not request.session.get("reset_user"):
+    user_id = request.session.get("reset_user")
+
+    if not user_id:
         return redirect("login")
-    user = CustomUser.objects.get(id=reset_user)
+
+    user = CustomUser.objects.get(id=user_id)
     otp_obj = PasswordResetOTP.objects.filter(user=user).last()
+
     if not otp_obj:
         return redirect("forget_password")
+
     if otp_obj.resend_count >= 3:
         cooldown_time = otp_obj.created_at + timedelta(hours=2)
+
         if timezone.now() < cooldown_time:
-            return render(
-                request,
-                "accounts/password_reset_confirm.html",
-                {
-                    "error": "Resend limit reached. Try again after 2 hours."
-                }
-            )
-        else:
-            # reset counter after cooldown
-            otp_obj.resend_count = 0
+            return render(request, "accounts/password_reset_confirm.html", {
+                "error": "Try again after 2 hours"
+            })
+
+        otp_obj.resend_count = 0  # reset after cooldown
+
     otp = generate_otp()
+
     otp_obj.otp = otp
     otp_obj.expiry_time = timezone.now() + timedelta(minutes=3)
     otp_obj.resend_count += 1
     otp_obj.created_at = timezone.now()
-
     otp_obj.save()
-
-
 
     send_mail(
         subject="Password Reset OTP",
-        message=f"Your new OTP is {otp}. It is valid for 3 minutes.",
+        message=f"Your new OTP is {otp}",
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
-        fail_silently=False,
     )
 
+    return redirect('password_verify_otp')
 
-    request.session["otp_timer_reset"] = True
 
-    return redirect('verify_otp')
+# --------------------------
+
 def reset_password(request):
-    if request.session.get("otp_verified"):
-        return redirect('login')
+    if not request.session.get("otp_verified"):
+        return redirect('forget_password')
 
     user_id = request.session.get('reset_user')
-
     user = CustomUser.objects.get(id=user_id)
 
     if request.method == "POST":
-
         form = NewPasswordForm(request.POST)
 
         if form.is_valid():
-
             password = form.cleaned_data["password"]
             confirm_password = form.cleaned_data["confirm_password"]
 
             if password != confirm_password:
+                return render(request, "accounts/password_reset_complete.html", {
+                    "form": form,
+                    "error": "Passwords do not match"
+                })
 
-                return render(request,
-                    "accounts/password_reset_confirm.html",
-                    {"form": form, "error": "Passwords do not match"}
-                )
             user.set_password(password)
             user.save()
-            email = user.email
+
             send_mail(
-                subject='Password Changed Successfully',
-                message='Your password has been changed successfully. If you did not perform this action, please contact support immediately.',
+                subject='Password Changed',
+                message='Your password was changed successfully.',
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=False,
+                recipient_list=[user.email],
             )
+
+            # CLEAN SESSION
+            del request.session["reset_user"]
+            del request.session["otp_verified"]
+
             return redirect("login")
 
     else:
         form = NewPasswordForm()
 
-    return render(request,
-        "accounts/password_reset_complete.html",
-        {"form": form,}
-    )
+    return render(request, "accounts/password_reset_complete.html", {"form": form})
 
-            
-def profile_view(request):
-    return render(request,'accounts/profile_view.html')
+
+# ==========================
+# 🔹 PROFILE
+# ==========================
+
