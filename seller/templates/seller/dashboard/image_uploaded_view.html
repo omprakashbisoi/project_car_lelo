@@ -1,77 +1,183 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+body {
+    background: #f6f8fb;
+}
+
+/* PAGE TITLE */
+.page-title {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* CAR CARD */
+.car-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+/* HEADER */
+.car-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.car-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* UPLOAD BUTTON */
+.btn-upload {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    padding: 6px 12px;
+}
+
+.btn-upload:hover {
+    transform: scale(1.05);
+}
+
+/* IMAGE CARD */
+.image-card {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    transition: 0.3s ease;
+    position: relative;
+}
+
+.image-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* IMAGE */
+.image-card img {
+    height: 150px;
+    width: 100%;
+    object-fit: cover;
+}
+
+/* BADGE */
+.image-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 11px;
+}
+
+/* ACTION OVERLAY */
+.image-actions {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.image-card:hover .image-actions {
+    opacity: 1;
+}
+
+/* BUTTONS */
+.image-actions .btn {
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+/* EMPTY STATE */
+.empty-state {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-size: 14px;
+}
+</style>
+
 <div class="container mt-4">
 
-{% for car in cars %}
+    <h3 class="page-title">Car Image Gallery</h3>
 
-<div class="card shadow-sm mb-4">
+    {% for car in cars %}
 
-<div class="card-header d-flex justify-content-between align-items-center">
+    <div class="car-card">
 
-<h5 class="mb-0">
-{{ car.brand }} - {{ car.car_model }}
-</h5>
+        <!-- HEADER -->
+        <div class="car-header">
+            <h5>{{ car.brand }} - {{ car.car_model }}</h5>
 
-<a href="{% url 'image_upload' car.id %}" class="btn btn-primary btn-sm">
-Upload Image
-</a>
+            <a href="{% url 'image_upload' car.id %}" class="btn btn-upload text-white">
+                + Upload Image
+            </a>
+        </div>
 
-</div>
+        <!-- IMAGES GRID -->
+        <div class="row g-3">
 
-<div class="card-body">
+            {% for image in car.images.all %}
 
-<div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+            <div class="col-6 col-md-4 col-lg-3">
 
-{% for image in car.images.all %}
+                <div class="image-card">
 
-<div class="col">
+                    <img src="{{ image.car_image.url }}">
 
-<div class="card h-100 text-center">
+                    <!-- TYPE BADGE -->
+                    <span class="badge bg-dark image-badge">
+                        {{ image.img_type|title }}
+                    </span>
 
-<img src="{{ image.image.url }}" class="card-img-top img-fluid" style="height:140px; object-fit:cover;">
+                    <!-- ACTIONS -->
+                    <div class="image-actions">
 
-<div class="card-body p-2">
+                        <a href="{% url 'uploded_image_edit' image.id %}" 
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
 
-<span class="badge bg-secondary">
-{{ image.img_type|title }}
-</span>
+                        <form action="{% url 'uploded_image_delete' image.id %}" method="POST">
+                            {% csrf_token %}
+                            <button class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+                        </form>
 
-<div class="d-flex justify-content-center gap-1">
+                    </div>
 
-<a href="{% url 'uploded_image_edit' image.id %}" 
-class="btn btn-warning btn-sm">
-Edit
-</a>
+                </div>
 
-<form action="{% url 'uploded_image_delete' image.id %}" method="POST">
-{% csrf_token %}
-<button class="btn btn-danger btn-sm">
-Delete
-</button>
-</form>
+            </div>
 
-</div>
+            {% empty %}
 
-</div>
+            <div class="col-12">
+                <div class="empty-state">
+                    No images uploaded for this car
+                </div>
+            </div>
 
-</div>
+            {% endfor %}
 
-</div>
+        </div>
 
-{% empty %}
+    </div>
 
-<p class="text-muted">No images uploaded yet.</p>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
+    {% endfor %}
 
 </div>
 

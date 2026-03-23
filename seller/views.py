@@ -74,9 +74,12 @@ def car_details(request):
 @login_required
 def dashboard(request):
     user = request.user
-    car_count = CarDetail.objects.filter(seller=user).count()
+    cars = CarDetail.objects.filter(seller=user)
+    car_count = cars.count()
+    sold_car_count = cars.filter(is_sold=True).count()
     context={
         'car_count':car_count,
+        'sold_car_count':sold_car_count,
     }
     return render(request,'seller/dashboard/dashboard.html',context)
 
@@ -88,6 +91,22 @@ def detail_view(request):
     }
 
     return render(request, 'seller/dashboard/car_detail_view.html', context)
+
+from django.http import JsonResponse
+
+def toggle_car_avalibility(request, car_id):
+    if request.method == "POST":
+        car = get_object_or_404(CarDetail, id=car_id, seller=request.user)
+        
+        car.is_available = not car.is_available
+        car.save()
+
+        return JsonResponse({
+            'success': True,
+            'is_available': car.is_available,
+        })
+
+    return JsonResponse({'success': False})
 
 
 @login_required
@@ -184,7 +203,7 @@ def uploaded_image_edit(request, image_id):
 
     if image.car.seller != request.user:
         messages.error(request, "You are not allowed to edit this image")
-        return redirect('seller')
+        return redirect('buyer')
 
     if request.method == "POST":
         form = ImageUploadForm(request.POST, request.FILES, instance=image)
@@ -192,7 +211,7 @@ def uploaded_image_edit(request, image_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Image updated successfully")
-            return redirect('seller')
+            return redirect('uploded_image_view')
 
     else:
         form = ImageUploadForm(instance=image)

@@ -3,54 +3,176 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
+body {
+    background: #f6f8fb;
+}
 
-<h2>Edit Car Image</h2>
+/* CONTAINER */
+.edit-container {
+    max-width: 700px;
+    margin: 50px auto;
+}
 
-<hr>
+/* CARD */
+.edit-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
 
-<div class="card p-4" style="max-width:500px;">
+/* HEADER */
+.edit-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
 
-<h5>
-{{ image.car.brand }} - {{ image.car.car_model }}
-</h5>
+.edit-header h3 {
+    font-weight: 700;
+}
 
-<br>
+.edit-header p {
+    font-size: 13px;
+    color: #777;
+}
 
-<!-- Current Image -->
-<div class="mb-3">
-<label>Current Image</label><br>
-<img src="{{ image.image.url }}" width="250" class="img-thumbnail">
+/* IMAGE PREVIEW */
+.image-preview {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.image-preview img {
+    width: 300px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 2px solid #eee;
+    transition: 0.3s;
+}
+
+.image-preview img:hover {
+    transform: scale(1.03);
+}
+
+/* FORM */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+/* INPUT */
+input[type="file"],
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* BUTTON */
+.btn-update {
+    width: 100%;
+    padding: 11px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-update:hover {
+    transform: scale(1.02);
+}
+
+/* CANCEL */
+.btn-cancel {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 12px;
+}
+
+/* ERROR */
+.error-text {
+    font-size: 12px;
+    color: red;
+    margin-top: 4px;
+}
+</style>
+
+<div class="edit-container">
+
+    <!-- DJANGO MESSAGES -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="edit-card">
+
+        <!-- HEADER -->
+        <div class="edit-header">
+            <h3>Edit Car Image</h3>
+            <p>{{ image.car.brand }} - {{ image.car.car_model }}</p>
+        </div>
+
+        <!-- IMAGE PREVIEW -->
+        <div class="image-preview">
+            <img id="previewImage" src="{{ image.car_image.url }}" alt="Car Image">
+        </div>
+
+        <!-- FORM -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- IMAGE TYPE -->
+            <div class="form-group">
+                <label class="form-label">Image Type</label>
+                {{ form.img_type }}
+                {% if form.img_type.errors %}
+                    <div class="error-text">{{ form.img_type.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- IMAGE UPLOAD -->
+            <div class="form-group">
+                <label class="form-label">Upload New Image</label>
+                {{ form.car_image }}
+                {% if form.car_image.errors %}
+                    <div class="error-text">{{ form.car_image.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- SUBMIT -->
+            <button type="submit" class="btn btn-success btn-update">
+                Update Image
+            </button>
+
+            <!-- CANCEL -->
+            <a href="{% url 'uploded_image_view' %}" class="btn btn-secondary btn-cancel">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
 </div>
 
-<!-- Edit Form -->
-<form method="POST" enctype="multipart/form-data">
-
-{% csrf_token %}
-
-<div class="mb-3">
-<label>Image Type</label>
-{{ form.img_type }}
-</div>
-
-<div class="mb-3">
-<label>Upload New Image</label>
-{{ form.image }}
-</div>
-
-<button type="submit" class="btn btn-success">
-Update Image
-</button>
-
-<a href="{% url 'uploded_image_view' %}" 
-class="btn btn-secondary">
-Cancel
-</a>
-
-</form>
-
-</div>
-
-</div>
+<!-- JS: LIVE PREVIEW -->
+<script>
+document.querySelector('input[type="file"]').addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (file) {
+        document.getElementById("previewImage").src = URL.createObjectURL(file);
+    }
+});
+</script>
 
 {% endblock %}

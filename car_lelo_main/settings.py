@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'wishlist',
     'location',
     'orders',
-    'notifications',
+    'notification',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'notifications.context_processors.notification_data',
+                'notification.context_processors.notification_data',
                 'wishlist.context_processors.wishlist_data',
             ],
         },

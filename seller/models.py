@@ -109,7 +109,7 @@ class CarDetail(models.Model):
     description = models.TextField(max_length=500, blank=True)
 
     is_available = models.BooleanField(default=True)
-
+    is_sold = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,40 +1,139 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
+
+<style>
+body {
+    background: #f6f8fb;
+}
+
+/* DASHBOARD WRAPPER */
+.dashboard-container {
+    padding: 10px;
+}
+
+/* HEADER */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-header h3 {
+    font-weight: 700;
+}
+
+.user-info {
+    font-size: 14px;
+    color: #666;
+}
+
+/* CARD GRID */
+.stats-card {
+    border: none;
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+/* CARD COLORS */
+.card-total {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+}
+
+.card-sold {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+/* ICON */
+.stats-icon {
+    font-size: 30px;
+    opacity: 0.3;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+/* TEXT */
+.stats-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stats-value {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* SMALL LABEL */
+.stats-footer {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+</style>
+
+<div class="row dashboard-container">
+
+    <!-- SIDEBAR -->
     {% include "seller/dashboard/sidebar.html" %}
 
+    <!-- MAIN CONTENT -->
     <div class="col-md-9">
-        <span>Logged in as <b>{{ request.user.username }}</b></span>
-        <!-- main content here -->
-         <div class="row">
-            <div class="col">
-                <div class="card boader-default mb-3">
-                    <div class="card-header text-center text-uppercase font-weigth-blod ">
-                        All Cars
-                    </div>
-                    <div class="card-body text-dark">
-                        <h5 class="card-title text-center">
-                            {{ car_count }}
-                        </h5>
-                    </div>
+
+        <!-- HEADER -->
+        <div class="dashboard-header">
+            <h3>Dashboard Overview</h3>
+            <div class="user-info">
+                Logged in as <b>{{ request.user.username }}</b>
+            </div>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="row g-4">
+
+            <!-- TOTAL CARS -->
+            <div class="col-md-6">
+                <div class="stats-card card-total">
+                    <div class="stats-title">Total Cars</div>
+                    <div class="stats-value">{{ car_count }}</div>
+                    <div class="stats-footer">All listed vehicles</div>
+
+                    <i class="fa-solid fa-car stats-icon"></i>
                 </div>
             </div>
 
+            <!-- SOLD CARS -->
+            <div class="col-md-6">
+                <div class="stats-card card-sold">
+                    <div class="stats-title">Cars Sold</div>
+                    <div class="stats-value">{{ sold_car_count }}</div>
+                    <div class="stats-footer">Completed sales</div>
 
-            <div class="col">
-                <div class="card boader-default mb-3">
-                    <div class="card-header text-center text-uppercase font-weight-blod ">
-                        Car Selled
-                    </div>
-                    <div class="card-body text-dark">
-                        <h5 class="card-title text-center">
-                            0
-                        </h5>
-                    </div>
+                    <i class="fa-solid fa-check-circle stats-icon"></i>
                 </div>
             </div>
-         </div>
+
+        </div>
+
     </div>
 </div>
+
 {% endblock %}

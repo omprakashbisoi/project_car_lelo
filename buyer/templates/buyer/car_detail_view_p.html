@@ -235,7 +235,7 @@
 
                 <hr>
 
-                <form method="POST" action="{% url 'notifications:send_request' car.id %}">
+                <form method="POST" action="{% url 'notifications:contact_request' car.id %}">
                     {% csrf_token %}
                     <button class="btn btn-primary w-100">
                         Contact Seller

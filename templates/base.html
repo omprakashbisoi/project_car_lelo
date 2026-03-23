@@ -168,7 +168,7 @@
                 <p class="text-center text-muted small">No notifications</p>
                 {% endfor %}
                 <div class="mt-2">
-                    <a href="{% url 'notifications:base_notifications' %}" class="btn btn-primary btn-sm w-100 view-all-btn">View All</a>
+                    <a href="{% url 'notification:base_notifications' %}" class="btn btn-primary btn-sm w-100 view-all-btn">View All</a>
                 </div>
             </div>
         </div>
@@ -226,7 +226,7 @@
 <!-- MARK NOTIFICATIONS AS READ -->
 <script>
 function markNotificationsRead() {
-    fetch("{% url 'notifications:mark_as_read' %}")
+    fetch("{% url 'notification:mark_as_read' %}")
         .then(res => res.json())
         .then(() => {
             let badge = document.getElementById("notif-badge");

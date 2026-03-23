@@ -1,16 +1,74 @@
+<!-- seller/dashboard/sidebar.html -->
+
+<style>
+.sidebar {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.sidebar-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    color: #333;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.sidebar a i {
+    font-size: 16px;
+}
+
+.sidebar a:hover {
+    background: #f3f5f9;
+    transform: translateX(4px);
+}
+
+.sidebar a.active {
+    background: linear-gradient(135deg, #000, #333);
+    color: #fff;
+}
+
+.sidebar a.active i {
+    color: #fff;
+}
+</style>
+
 <div class="col-md-3">
-    <div class="nav flex-column nav-pills bg-light" aria-orientation="vertical">
+    <div class="sidebar">
+
+        <div class="sidebar-title">SELLER PANEL</div>
+
         <a href="{% url 'dashboard' %}"
-           class="nav-link text-dark {% if '/overal_view/' in request.path %}bg-warning{% endif %}">
+           class="{% if '/overal_view/' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-chart-line"></i>
             Dashboard
         </a>
-        <a href="{% url "detail_view" %}"
-           class="nav-link text-dark {% if '/detail_view/' in request.path %}bg-warning{% endif %}">
-            Details
+
+        <a href="{% url 'detail_view' %}"
+           class="{% if '/detail_view/' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-car"></i>
+            Car Listings
         </a>
+
         <a href="{% url 'uploded_image_view' %}"
-           class="nav-link text-dark {% if '/uploded_image_view/' in request.path %}bg-warning{% endif %}">
+           class="{% if '/uploded_image_view/' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-image"></i>
             Images
         </a>
+
     </div>
 </div>
