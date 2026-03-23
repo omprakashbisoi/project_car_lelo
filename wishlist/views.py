@@ -1,17 +1,20 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Wishlist
-from seller.models import CarDetail
+from seller.models import CarDetail,ImageStore
 
 # Create your views here.
 @login_required
 def wishlist_view(request):
-    wishlist = Wishlist.objects.filter(user=request.user).select_related('car')
+    # Only include wishlist items where the car has at least one image
+    wishlist = Wishlist.objects.filter(
+        user=request.user,
+        car__images__isnull=False  # ensures the car has at least one image
+    ).distinct().select_related('car')
 
     context = {
         "wishlist": wishlist
     }
-
     return render(request, "wishlist/wishlist_view.html", context)
 @login_required
 def add_remove_wish(request,car_id):

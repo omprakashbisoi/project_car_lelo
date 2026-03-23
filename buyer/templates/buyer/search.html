@@ -3,65 +3,184 @@
 
 {% block content %}
 
-<h3 class="text-warning" style="letter-spacing: 2px;">
-    Search Term - {{ keyword }}
-</h3>
+<style>
+    body {
+        background: #f5f7fa;
+    }
 
-{% if cars %}
-<div class="row">
+    .search-header {
+        font-weight: 600;
+        font-size: 20px;
+        color: #1f2937;
+    }
 
-    {% for car in cars %}
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm rounded-4 border-0 h-100">
+    .car-card {
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        transition: all 0.25s ease;
+        overflow: hidden;
+    }
 
-            <!-- Image Section -->
-            <div class="position-relative bg-light rounded-top-4">
-                <img src="{% static 'images/car.png' %}" class="card-img-top p-3" alt="Car Image">
-                <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
-                    ♡
-                </button>
-            </div>
+    .car-card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+        transform: translateY(-3px);
+    }
 
-            <!-- Card Body -->
-            <div class="card-body">
+    .car-img {
+        width: 100%;
+        height: 210px;
+        object-fit: cover;
+    }
 
-                <span class="badge bg-primary-subtle text-primary mb-2">
-                    Car Lelo Owned Stock
-                </span>
+    .wishlist-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #fff;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-                <h6 class="fw-bold">
-                    {{ car.year }} {{ car.brand }} {{ car.car_model }} {{ car.variant }}
-                </h6>
+    .wishlist-btn i {
+        font-size: 14px;
+        color: #6b7280;
+    }
 
-                <!-- Specs -->
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                    <span class="badge bg-light text-dark">
-                        {{ car.kilometers }} km
-                    </span>
-                    <span class="badge bg-light text-dark">
-                        {{ car.fuel_type }}
-                    </span>
+    .badge-custom {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: #ecfdf5;
+        color: #059669;
+        font-weight: 500;
+    }
+
+    .spec-badge {
+        background: #f3f4f6;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        color: #374151;
+    }
+
+    .price {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .location {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .view-btn {
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 80px 0;
+    }
+
+    .empty-box img {
+        width: 160px;
+        opacity: 0.6;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <h4 class="search-header mb-4">
+        Results for "<span class="text-warning">{{ keyword }}</span>"
+    </h4>
+
+    {% if cars %}
+    <div class="row">
+
+        {% for car in cars %}
+        <div class="col-md-4 mb-4">
+
+            <div class="car-card">
+
+                <!-- IMAGE -->
+                <div class="position-relative">
+
+                    <a href="{% url 'car_detail_view' car.id %}">
+                        {% with car.images.all|first as first_image %}
+                            {% if first_image and first_image.car_image %}
+                                <img src="{{ first_image.car_image.url }}" class="car-img">
+                            {% else %}
+                                <img src="{% static 'images/default_car.jpg' %}" class="car-img">
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+
+                    <!-- Wishlist -->
+                    <button class="wishlist-btn">
+                        <i class="bi bi-heart"></i>
+                    </button>
+
                 </div>
 
-                <!-- Price -->
-                <h5 class="fw-bold text-dark">
-                    ₹ {{ car.price }}
-                </h5>
+                <!-- CONTENT -->
+                <div class="p-3">
 
-                <!-- Location -->
-                <p class="text-muted small mb-0">
-                    📍 {{ car.car_location }}
-                </p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge-custom">Verified</span>
+                        <div class="price">₹ {{ car.price }}</div>
+                    </div>
+
+                    <h6 class="fw-semibold mb-2">
+                        {{ car.year }} {{ car.brand }} {{ car.car_model }} {{ car.variant }}
+                    </h6>
+
+                    <!-- Specs -->
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="spec-badge">{{ car.kilometers }} km</span>
+                        <span class="spec-badge">{{ car.fuel_type }}</span>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="location mb-3">
+                        {{ car.car_location }}
+                    </div>
+
+                    <!-- CTA -->
+                    <a href="{% url 'car_detail_view' car.id %}" 
+                       class="btn btn-dark w-100 view-btn">
+                        View Details
+                    </a>
+
+                </div>
 
             </div>
+
         </div>
+        {% endfor %}
+
     </div>
-    {% endfor %}
+
+    {% else %}
+
+    <!-- EMPTY STATE -->
+    <div class="empty-box">
+        <img src="{% static 'images/no-data.jpg' %}">
+        <h5 class="mt-3">No matching cars found</h5>
+        <p class="text-muted">Try a different keyword or adjust your search.</p>
+    </div>
+
+    {% endif %}
 
 </div>
-
-{% else %}
-    <h3 class="text-danger mt-4">No Result Found</h3>
-{% endif %}
 
 {% endblock %}

@@ -1,22 +1,101 @@
+<style>
+.notification-card {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 15px;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transition: all 0.25s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Left section */
+.notif-left h5 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.notif-left small {
+    color: #888;
+}
+
+/* Status badge */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-accepted {
+    background: #e6f7ee;
+    color: #1ca65c;
+}
+
+.status-rejected {
+    background: #fdeaea;
+    color: #d93025;
+}
+
+.status-pending {
+    background: #fff4e5;
+    color: #ff9800;
+}
+
+/* Contact box */
+.contact-box {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #333;
+}
+</style>
+
+
 {% for req in buyer_requests %}
-<div class="card p-3 mb-3 shadow-sm rounded-3">
+<div class="notification-card">
 
-    <h5>{{ req.car.brand }} {{ req.car.car_model }}</h5>
+    <!-- LEFT -->
+    <div class="notif-left">
 
-    {% if req.status == 'accepted' %}
-        <p class="text-success fw-bold">Seller Accepted ✅</p>
-        <p>Contact: {{ req.seller.email }}</p>
+        <h5>{{ req.car.brand }} {{ req.car.car_model }}</h5>
 
-    {% elif req.status == 'rejected' %}
-        <p class="text-danger fw-bold">Rejected ❌</p>
+        <small>{{ req.created_at|timesince }} ago</small>
 
-    {% else %}
-        <p class="text-warning fw-bold">Pending ⏳</p>
-    {% endif %}
+        {% if req.status == 'accepted' %}
+            <div class="contact-box">
+                📧 {{ req.seller.email }}
+            </div>
+        {% endif %}
 
-    <small class="text-muted">{{ req.created_at }}</small>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+
+        {% if req.status == 'accepted' %}
+            <span class="status-badge status-accepted">Accepted</span>
+
+        {% elif req.status == 'rejected' %}
+            <span class="status-badge status-rejected">Rejected</span>
+
+        {% else %}
+            <span class="status-badge status-pending">Pending</span>
+        {% endif %}
+
+    </div>
 
 </div>
+
 {% empty %}
-<p>No buyer notifications</p>
+<div class="text-center mt-5">
+    <h5>No Notifications Yet 🚗</h5>
+    <p class="text-muted">When you contact sellers, updates will appear here.</p>
+</div>
 {% endfor %}

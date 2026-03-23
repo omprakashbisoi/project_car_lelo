@@ -23,13 +23,13 @@ def buyer(request):
     }
     return render(request, "buyer/car_showcase.html", context)
 
-
 def search(request):
-    keyword = request.GET.get('keyword','')
+    keyword = request.GET.get('keyword', '').strip()
 
-    car = CarDetail.objects.filter(is_available=True)
+    cars = CarDetail.objects.filter(is_available=True)
+
     if keyword:
-        cars = car.filter(
+        cars = cars.filter(
             Q(brand__icontains=keyword) |
             Q(car_model__icontains=keyword) |
             Q(variant__icontains=keyword) |
@@ -37,7 +37,6 @@ def search(request):
         )
 
     context = {
-        'car':car,
         'cars': cars,
         'keyword': keyword
     }
