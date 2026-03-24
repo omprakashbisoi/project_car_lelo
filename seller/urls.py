@@ -7,6 +7,7 @@ urlpatterns = [
     
     #Dashboard
     path('dashboard/overal_view/', views.dashboard, name='dashboard'),
+    path('dashboard/sold_car_view/', views.sold_car_view, name='sold_car_view'),
     path('dashboard/toggle-car-status/<int:car_id>/',views.toggle_car_avalibility,name = 'toggle_car_avalibility'),
     #car detail curd
     path('dashboard/detail_view/', views.detail_view, name='detail_view'),

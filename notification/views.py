@@ -2,8 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q
+from django.utils import timezone
 from seller.models import CarDetail
 from .models import Notification
+from orders.models import Order
 
 
 @login_required
@@ -83,6 +85,9 @@ def handle_request_action(request, req_id, action):
 
         if action == 'accept':
 
+            # ── CONTACT REQUEST ACCEPTED ──
+            # Seller shares contact → buyer gets notified
+            # No Booking needed here — contact sharing is not a booking
             if notif.request_type == 'contact_request':
                 Notification.objects.create(
                     buyer=notif.buyer,
@@ -96,7 +101,26 @@ def handle_request_action(request, req_id, action):
                     is_read=False
                 )
 
+            # ── BUY REQUEST ACCEPTED ──
+            # Create Order + mark car sold + notify both parties
             elif notif.request_type == 'buy_request':
+
+                # Create order record
+                Order.objects.create(
+                    user=notif.buyer,
+                    car=notif.car,
+                    car_name=f"{notif.car.brand} {notif.car.car_model}",
+                    car_price=notif.car.price,
+                    seller_name=notif.seller,
+                    status='completed',
+                )
+
+                # Mark car as sold
+                notif.car.is_sold = True
+                notif.car.sold_at = timezone.now()
+                notif.car.save(update_fields=['is_sold', 'sold_at'])
+
+                # Notify buyer — deal confirmed
                 Notification.objects.create(
                     buyer=notif.buyer,
                     seller=notif.seller,
@@ -108,6 +132,8 @@ def handle_request_action(request, req_id, action):
                     visible_to='buyer',
                     is_read=False
                 )
+
+                # Notify seller — sale recorded
                 Notification.objects.create(
                     buyer=notif.buyer,
                     seller=notif.seller,
@@ -119,6 +145,10 @@ def handle_request_action(request, req_id, action):
                     visible_to='seller',
                     is_read=False
                 )
+
+        # ── REJECTED ──
+        # Do nothing — rejected means no record needed
+        # The notification itself already has status='rejected' as the record
 
     return redirect('notification:base_notifications')
 

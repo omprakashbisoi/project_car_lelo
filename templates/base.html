@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- Your CSS -->
@@ -19,220 +19,941 @@
     <title>Car Lelo</title>
 
     <style>
-        /* NAVBAR IMPROVEMENTS */
-        .navbar {
-            border-bottom: 1px solid #eee;
+    :root {
+        --black:       #0a0a0b;
+        --white:       #ffffff;
+        --gray-50:     #f8f8f8;
+        --gray-100:    #f1f1f1;
+        --gray-200:    #e2e2e2;
+        --gray-400:    #a0a0a0;
+        --gray-600:    #6b6b6b;
+        --gray-800:    #2a2a2a;
+        --amber:       #f5a623;
+        --amber-dark:  #d4891a;
+        --amber-light: #fff8ed;
+        --blue:        #1a56ff;
+        --blue-light:  #eef2ff;
+        --red:         #e53e3e;
+        --red-light:   #fff5f5;
+        --green:       #16a34a;
+        --green-light: #f0fdf4;
+        --nav-h:       64px;
+        --radius-sm:   8px;
+        --radius-md:   12px;
+        --radius-lg:   18px;
+        --radius-xl:   24px;
+        --shadow-sm:   0 1px 4px rgba(0,0,0,0.06);
+        --shadow-md:   0 4px 20px rgba(0,0,0,0.09);
+        --shadow-lg:   0 12px 40px rgba(0,0,0,0.13);
+        --shadow-xl:   0 24px 60px rgba(0,0,0,0.18);
+        --font-body:   'Sora', sans-serif;
+        --font-mono:   'JetBrains Mono', monospace;
+        --tr-fast:     0.15s cubic-bezier(0.4,0,0.2,1);
+        --tr-med:      0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: var(--font-body);
+        background: var(--gray-50);
+        color: var(--black);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ── NAVBAR ── */
+    .cl-nav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        height: var(--nav-h);
+        background: rgba(255,255,255,0.93);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        gap: 16px;
+        transition: box-shadow var(--tr-med);
+    }
+
+    .cl-nav.scrolled { box-shadow: var(--shadow-md); }
+
+    /* LOGO */
+    .cl-logo {
+        font-family: var(--font-body);
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--black);
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-shrink: 0;
+        transition: opacity var(--tr-fast);
+    }
+
+    .cl-logo:hover { opacity: 0.7; color: var(--black); text-decoration: none; }
+
+    .cl-logo-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--amber);
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    /* SEARCH */
+    .cl-search {
+        flex: 1;
+        max-width: 460px;
+        margin: 0 auto;
+    }
+
+    .cl-search-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--gray-100);
+        border: 1.5px solid transparent;
+        border-radius: var(--radius-xl);
+        padding: 0 5px 0 14px;
+        height: 42px;
+        transition: var(--tr-med);
+        gap: 6px;
+    }
+
+    .cl-search-wrap:focus-within {
+        background: var(--white);
+        border-color: var(--black);
+        box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+    }
+
+    .cl-search-ico {
+        color: var(--gray-400);
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .cl-search-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: var(--font-body);
+        font-size: 14px;
+        color: var(--black);
+        outline: none;
+        min-width: 0;
+    }
+
+    .cl-search-input::placeholder { color: var(--gray-400); }
+
+    .cl-search-btn {
+        background: var(--amber);
+        color: var(--black);
+        border: none;
+        border-radius: 20px;
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 7px 16px;
+        cursor: pointer;
+        transition: var(--tr-fast);
+        white-space: nowrap;
+        flex-shrink: 0;
+        height: 32px;
+        display: flex;
+        align-items: center;
+    }
+
+    .cl-search-btn:hover {
+        background: var(--amber-dark);
+        transform: scale(1.02);
+    }
+
+    /* ACTIONS */
+    .cl-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+
+    /* ICON BUTTON */
+    .cl-icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--gray-600);
+        cursor: pointer;
+        transition: var(--tr-fast);
+        text-decoration: none;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .cl-icon-btn:hover {
+        background: var(--gray-100);
+        color: var(--black);
+        text-decoration: none;
+    }
+
+    .cl-icon-btn:active { transform: scale(0.92); }
+
+    .cl-heart-btn:hover {
+        color: var(--red);
+        background: var(--red-light);
+    }
+
+    /* BADGE */
+    .cl-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        min-width: 17px;
+        height: 17px;
+        background: var(--red);
+        color: #fff;
+        font-size: 10px;
+        font-family: var(--font-mono);
+        font-weight: 500;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        border: 2px solid var(--white);
+        animation: badge-pop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes badge-pop {
+        from { transform: scale(0); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
+    }
+
+    /* DIVIDER */
+    .cl-divider {
+        width: 1px;
+        height: 22px;
+        background: var(--gray-200);
+        flex-shrink: 0;
+        margin: 0 4px;
+    }
+
+    /* SELL BUTTON */
+    .cl-sell-btn {
+        background: var(--black);
+        color: var(--white);
+        border: none;
+        border-radius: var(--radius-xl);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 9px 20px;
+        cursor: pointer;
+        transition: var(--tr-fast);
+        text-decoration: none;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .cl-sell-btn:hover {
+        background: var(--gray-800);
+        color: var(--white);
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+    }
+
+    .cl-sell-btn:active { transform: translateY(0); }
+
+    /* PROFILE DROPDOWN TOGGLE */
+    .cl-profile-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--gray-100);
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius-xl);
+        padding: 6px 14px 6px 8px;
+        cursor: pointer;
+        transition: var(--tr-fast);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--black);
+    }
+
+    .cl-profile-btn:hover {
+        background: var(--white);
+        border-color: var(--black);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .cl-profile-avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        font-family: var(--font-mono);
+        flex-shrink: 0;
+    }
+
+    .cl-profile-chevron {
+        font-size: 12px;
+        color: var(--gray-400);
+        transition: transform var(--tr-fast);
+    }
+
+    .show > .cl-profile-btn .cl-profile-chevron {
+        transform: rotate(180deg);
+    }
+
+    /* ── NOTIFICATION DROPDOWN ── */
+    .cl-notif-menu {
+        width: 340px;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        padding: 0;
+        overflow: hidden;
+        margin-top: 10px !important;
+        background: var(--white);
+    }
+
+    .cl-notif-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .cl-notif-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--black);
+        letter-spacing: -0.2px;
+    }
+
+    .cl-mark-form button {
+        background: none;
+        border: none;
+        font-family: var(--font-body);
+        font-size: 12px;
+        color: var(--gray-400);
+        cursor: pointer;
+        padding: 0;
+        transition: var(--tr-fast);
+    }
+
+    .cl-mark-form button:hover { color: var(--black); }
+
+    .cl-notif-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .cl-notif-list::-webkit-scrollbar { width: 3px; }
+    .cl-notif-list::-webkit-scrollbar-track { background: transparent; }
+    .cl-notif-list::-webkit-scrollbar-thumb {
+        background: var(--gray-200);
+        border-radius: 4px;
+    }
+
+    .cl-notif-item {
+        display: flex;
+        gap: 11px;
+        align-items: flex-start;
+        padding: 11px 16px;
+        border-bottom: 1px solid var(--gray-100);
+        transition: background var(--tr-fast);
+        position: relative;
+    }
+
+    .cl-notif-item:last-child { border-bottom: none; }
+    .cl-notif-item:hover { background: var(--gray-50); }
+
+    .cl-notif-item.unread { background: #fafcff; }
+
+    .cl-notif-item.unread::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: var(--blue);
+    }
+
+    .cl-notif-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .cl-notif-icon.ic-contact  { background: #e0f2fe; }
+    .cl-notif-icon.ic-buy      { background: var(--green-light); }
+    .cl-notif-icon.ic-confirm  { background: var(--amber-light); }
+    .cl-notif-icon.ic-incoming { background: var(--gray-100); }
+
+    .cl-notif-body { flex: 1; min-width: 0; }
+
+    .cl-notif-msg {
+        font-size: 13px;
+        color: var(--black);
+        line-height: 1.45;
+        margin-bottom: 3px;
+    }
+
+    .cl-notif-msg strong { font-weight: 600; }
+
+    .cl-notif-time {
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--gray-400);
+    }
+
+    .cl-notif-empty {
+        padding: 30px 16px;
+        text-align: center;
+    }
+
+    .cl-notif-empty-icon {
+        font-size: 30px;
+        display: block;
+        margin-bottom: 8px;
+        opacity: 0.35;
+    }
+
+    .cl-notif-empty p {
+        font-size: 13px;
+        color: var(--gray-400);
+        margin: 0;
+    }
+
+    .cl-notif-footer {
+        padding: 10px 16px;
+        border-top: 1px solid var(--gray-100);
+    }
+
+    .cl-view-all {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: var(--black);
+        color: var(--white);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 9px;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        transition: var(--tr-fast);
+        letter-spacing: 0.1px;
+    }
+
+    .cl-view-all:hover {
+        background: var(--gray-800);
+        color: var(--white);
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* ── PROFILE DROPDOWN MENU ── */
+    .cl-profile-menu {
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        padding: 6px;
+        min-width: 200px;
+        margin-top: 8px !important;
+        background: var(--white);
+    }
+
+    .cl-profile-menu .dropdown-item {
+        font-family: var(--font-body);
+        font-size: 13.5px;
+        font-weight: 400;
+        color: var(--black);
+        border-radius: var(--radius-sm);
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background var(--tr-fast);
+    }
+
+    .cl-profile-menu .dropdown-item:hover {
+        background: var(--gray-100);
+        color: var(--black);
+    }
+
+    .cl-profile-menu .dropdown-item.text-danger:hover {
+        background: var(--red-light);
+        color: var(--red);
+    }
+
+    .cl-profile-menu .dropdown-item i {
+        font-size: 15px;
+        color: var(--gray-400);
+        width: 16px;
+        text-align: center;
+    }
+
+    .cl-profile-menu .dropdown-item.text-danger i { color: var(--red); }
+
+    .cl-profile-menu hr {
+        margin: 4px 0;
+        border-color: var(--gray-100);
+    }
+
+    /* PROFILE HEADER INSIDE MENU */
+    .cl-profile-info {
+        padding: 10px 12px 8px;
+        border-bottom: 1px solid var(--gray-100);
+        margin-bottom: 4px;
+    }
+
+    .cl-profile-info-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--black);
+    }
+
+    .cl-profile-info-role {
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--gray-400);
+        margin-top: 1px;
+    }
+
+    /* ── MOBILE TOGGLE ── */
+    .cl-mob-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 22px;
+        color: var(--black);
+        cursor: pointer;
+        padding: 4px;
+        margin-left: auto;
+    }
+
+    /* ── AUTH BUTTONS ── */
+    .cl-auth-login {
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--gray-600);
+        background: transparent;
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius-xl);
+        padding: 7px 16px;
+        text-decoration: none;
+        transition: var(--tr-fast);
+        white-space: nowrap;
+    }
+
+    .cl-auth-login:hover {
+        color: var(--black);
+        border-color: var(--black);
+        text-decoration: none;
+    }
+
+    .cl-auth-register {
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--white);
+        background: var(--black);
+        border: none;
+        border-radius: var(--radius-xl);
+        padding: 8px 16px;
+        text-decoration: none;
+        transition: var(--tr-fast);
+        white-space: nowrap;
+    }
+
+    .cl-auth-register:hover {
+        background: var(--gray-800);
+        color: var(--white);
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    /* ── MAIN CONTENT ── */
+    .cl-main {
+        flex: 1;
+    }
+
+    .cl-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 24px;
+    }
+
+    /* ── FOOTER ── */
+    .cl-footer {
+        background: var(--white);
+        border-top: 1px solid var(--gray-200);
+        padding: 20px 24px;
+        text-align: center;
+        font-size: 13px;
+        color: var(--gray-400);
+        margin-top: auto;
+    }
+
+    .cl-footer a {
+        color: var(--black);
+        font-weight: 500;
+        text-decoration: none;
+        border-bottom: 1px solid var(--gray-200);
+        transition: border-color var(--tr-fast);
+    }
+
+    .cl-footer a:hover {
+        border-color: var(--black);
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+        .cl-nav { padding: 0 16px; gap: 10px; }
+        .cl-search { display: none; }
+        .cl-mob-toggle { display: flex; }
+        .cl-divider { display: none; }
+        .cl-sell-btn span { display: none; }
+        .cl-sell-btn { padding: 9px 14px; }
+
+        .cl-mob-search {
+            display: block;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--gray-100);
+            background: var(--white);
         }
 
-        /* SEARCH BAR */
-        .search-box {
-            max-width: 500px;
-            width: 100%;
-        }
+        .cl-mob-search .cl-search-wrap { max-width: 100%; }
+        .cl-mob-search.hidden { display: none; }
 
-        /* ICON STYLING */
-        .nav-icon {
-            font-size: 20px;
-            color: #555;
-            position: relative;
-            transition: all 0.2s ease;
-        }
+        .cl-container { padding: 16px; }
+        .cl-notif-menu { width: calc(100vw - 32px); }
+    }
 
-        .nav-icon:hover {
-            color: #000;
-            transform: scale(1.1);
-        }
-
-        /* NOTIFICATION & WISHLIST BADGE */
-        .badge-custom {
-            position: absolute;
-            top: -5px;
-            right: -8px;
-            font-size: 10px;
-            padding: 4px 6px;
-            border-radius: 50%;
-        }
-
-        /* BUTTONS */
-        .sell-btn {
-            border-radius: 20px;
-            font-weight: 600;
-            padding: 6px 16px;
-        }
-
-        .profile-btn {
-            border-radius: 20px;
-            font-weight: 500;
-        }
-
-        .wishlist-btn {
-            border-radius: 50%;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            font-size: 18px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .wishlist-btn:hover {
-            background-color: #ff6b6b;
-            color: #fff;
-            transform: scale(1.2);
-        }
-
-        /* DROPDOWN */
-        .dropdown-menu {
-            border-radius: 10px;
-            border: none;
-        }
-
-        /* NOTIFICATION DROPDOWN */
-        .notif-dropdown {
-            width: 320px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .notif-item {
-            padding: 10px;
-            border-radius: 8px;
-            transition: 0.2s;
-        }
-
-        .notif-item.unread {
-            background: #eef4ff;
-            font-weight: 500;
-        }
-
-        .notif-item:hover {
-            background: #f5f5f5;
-        }
-
-        /* MOBILE FIX */
-        @media (max-width: 768px) {
-            .search-box {
-                margin-top: 10px;
-            }
-        }
+    @media (min-width: 769px) {
+        .cl-mob-search { display: none !important; }
+    }
     </style>
 </head>
 <body>
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg bg-white px-4 py-2">
+<!-- ═══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
+<nav class="cl-nav" id="cl-nav">
 
     <!-- LOGO -->
-    <a class="navbar-brand fw-bold" href="/">Car Lelo</a>
+    <a class="cl-logo" href="/">
+        Car Lelo <span class="cl-logo-dot"></span>
+    </a>
 
-    <!-- TOGGLE -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarContent">
-
-        <!-- SEARCH -->
-        <form class="mx-auto search-box" action="{% url 'search' %}" method="GET">
-            <div class="input-group">
-                <input class="form-control border-end-0" type="text" name="keyword" placeholder="Search cars...">
-                <button class="btn btn-warning px-4">Go</button>
+    <!-- DESKTOP SEARCH -->
+    <div class="cl-search">
+        <form action="{% url 'search' %}" method="GET">
+            <div class="cl-search-wrap">
+                <i class="bi bi-search cl-search-ico"></i>
+                <input
+                    class="cl-search-input"
+                    type="text"
+                    name="keyword"
+                    placeholder="Search cars, brands, models..."
+                    autocomplete="off"
+                >
+                <button type="submit" class="cl-search-btn">Search</button>
             </div>
         </form>
+    </div>
 
-        <!-- RIGHT -->
-        <div class="d-flex align-items-center gap-3 ms-auto mt-3 mt-lg-0">
+    <!-- RIGHT ACTIONS -->
+    <div class="cl-actions">
 
         {% if user.is_authenticated %}
-        <!-- 🔔 NOTIFICATIONS -->
-        <div class="dropdown">
-            <a href="#" class="nav-icon" data-bs-toggle="dropdown" onclick="markNotificationsRead()">
-                <i class="bi bi-bell"></i>
-                {% if unread_count > 0 %}
-                <span id="notif-badge" class="badge bg-danger badge-custom">{{ unread_count }}</span>
+
+            <!-- NOTIFICATIONS -->
+            <div class="dropdown">
+                <button class="cl-icon-btn" data-bs-toggle="dropdown" aria-expanded="false" id="notif-toggle">
+                    <i class="bi bi-bell"></i>
+                    {% if unread_count > 0 %}
+                        <span class="cl-badge" id="notif-badge">
+                            {% if unread_count > 9 %}9+{% else %}{{ unread_count }}{% endif %}
+                        </span>
+                    {% endif %}
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end cl-notif-menu">
+
+                    <!-- HEAD -->
+                    <div class="cl-notif-head">
+                        <span class="cl-notif-title">Notifications</span>
+                        {% if unread_count > 0 %}
+                        <form method="post" action="{% url 'notification:mark_as_read' %}" class="cl-mark-form">
+                            {% csrf_token %}
+                            <button type="submit">Mark all read</button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <!-- LIST -->
+                    <div class="cl-notif-list">
+                        {% for notif in recent_notifications %}
+                        <div class="cl-notif-item {% if not notif.is_read %}unread{% endif %}">
+
+                            <!-- ICON -->
+                            {% if notif.visible_to == 'seller' %}
+                                {% if notif.request_type == 'contact_request' %}
+                                    <div class="cl-notif-icon ic-incoming">📞</div>
+                                {% elif notif.request_type == 'buy_request' %}
+                                    <div class="cl-notif-icon ic-buy">💰</div>
+                                {% else %}
+                                    <div class="cl-notif-icon ic-confirm">🤝</div>
+                                {% endif %}
+                            {% elif notif.visible_to == 'buyer' %}
+                                {% if notif.request_type == 'contact_shared' %}
+                                    <div class="cl-notif-icon ic-contact">📧</div>
+                                {% elif notif.request_type == 'buy_confirmation' %}
+                                    <div class="cl-notif-icon ic-buy">✅</div>
+                                {% else %}
+                                    <div class="cl-notif-icon ic-incoming">🔔</div>
+                                {% endif %}
+                            {% endif %}
+
+                            <!-- TEXT -->
+                            <div class="cl-notif-body">
+                                <div class="cl-notif-msg">
+                                    {% if notif.visible_to == 'seller' %}
+                                        {% if notif.request_type == 'contact_request' %}
+                                            <strong>{{ notif.buyer.username }}</strong> is interested in your car
+                                        {% elif notif.request_type == 'buy_request' %}
+                                            <strong>{{ notif.buyer.username }}</strong> wants to buy your car
+                                        {% elif notif.request_type == 'sell_confirmation' %}
+                                            You confirmed sale to <strong>{{ notif.buyer.username }}</strong>
+                                        {% endif %}
+                                    {% elif notif.visible_to == 'buyer' %}
+                                        {% if notif.request_type == 'contact_shared' %}
+                                            <strong>{{ notif.seller.username }}</strong> shared their contact
+                                        {% elif notif.request_type == 'buy_confirmation' %}
+                                            <strong>{{ notif.seller.username }}</strong> accepted your buy request 🎉
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                <div class="cl-notif-time">{{ notif.created_at|timesince }} ago</div>
+                            </div>
+
+                        </div>
+                        {% empty %}
+                        <div class="cl-notif-empty">
+                            <span class="cl-notif-empty-icon">🔕</span>
+                            <p>No notifications yet</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="cl-notif-footer">
+                        <a href="{% url 'notification:base_notifications' %}" class="cl-view-all">
+                            View All Notifications
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- WISHLIST -->
+            <a href="{% url 'wishlist_view' %}" class="cl-icon-btn cl-heart-btn">
+                <i class="bi bi-heart"></i>
+                {% if wishlist_count > 0 %}
+                    <span class="cl-badge">
+                        {% if wishlist_count > 9 %}9+{% else %}{{ wishlist_count }}{% endif %}
+                    </span>
                 {% endif %}
             </a>
 
-            <div class="dropdown-menu dropdown-menu-end notif-dropdown">
-                <div class="d-flex justify-content-between align-items-center px-2 mb-2">
-                    <span class="fw-semibold">Notifications</span>
-                </div>
-                {% for req in recent_notifications %}
-                <div class="notif-item {% if not req.is_read %}unread{% endif %}">
-                    <div>
-                        <strong>{{ req.buyer.username }}</strong> interested in your car
+            <div class="cl-divider"></div>
+
+            <!-- SELL -->
+            <a href="{% url 'car_details' %}" class="cl-sell-btn">
+                <i class="bi bi-plus-lg"></i>
+                <span>Sell</span>
+            </a>
+
+            <!-- PROFILE -->
+            <div class="dropdown">
+                <button class="cl-profile-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="cl-profile-avatar">{{ user.username|first|upper }}</div>
+                    {{ user.username }}
+                    <i class="bi bi-chevron-down cl-profile-chevron"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end cl-profile-menu">
+                    <div class="cl-profile-info">
+                        <div class="cl-profile-info-name">{{ user.username }}</div>
+                        <div class="cl-profile-info-role">
+                            {% if user.role == "seller" %}seller{% else %}buyer{% endif %}
+                        </div>
                     </div>
-                    <small class="text-muted">{{ req.created_at|timesince }} ago</small>
-                </div>
-                {% empty %}
-                <p class="text-center text-muted small">No notifications</p>
-                {% endfor %}
-                <div class="mt-2">
-                    <a href="{% url 'notification:base_notifications' %}" class="btn btn-primary btn-sm w-100 view-all-btn">View All</a>
-                </div>
+
+                    <li>
+                        <a class="dropdown-item" href="{% url 'profile' %}">
+                            <i class="bi bi-person"></i> Profile
+                        </a>
+                    </li>
+
+                    {% if user.profile.role == "seller" %}
+                    <li>
+                        <a class="dropdown-item" href="{% url 'dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li>
+                        <a class="dropdown-item" href="{% url 'notification:base_notifications' %}">
+                            <i class="bi bi-bell"></i> Notifications
+                            {% if unread_count > 0 %}
+                                <span style="
+                                    margin-left:auto;
+                                    background:var(--red);
+                                    color:#fff;
+                                    font-size:10px;
+                                    font-family:var(--font-mono);
+                                    padding:1px 6px;
+                                    border-radius:20px;
+                                ">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+
+                    <hr>
+
+                    <li>
+                        <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
             </div>
-        </div>
-
-        <!-- WISHLIST -->
-        <a href="{% url 'wishlist_view' %}" class="wishlist-btn position-relative">
-            <i class="bi bi-heart"></i>
-            {% if wishlist_count > 0 %}
-            <span class="badge bg-danger badge-custom">{{ wishlist_count }}</span>
-            {% endif %}
-        </a>
-
-        <!-- SELL -->
-        <a href="{% url 'car_details' %}" class="btn btn-dark sell-btn">Sell</a>
-
-        <!-- PROFILE -->
-        <div class="dropdown">
-            <button class="btn btn-outline-primary profile-btn dropdown-toggle" data-bs-toggle="dropdown">
-                {{ user.username }}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
-                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i> Profile</a></li>
-                {% if user.profile.role == "seller" %}
-                <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-                {% endif %}
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
-            </ul>
-        </div>
 
         {% else %}
-        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">Login</a>
-        <a class="btn btn-outline-secondary btn-sm" href="{% url 'register' %}">Register</a>
+
+            <!-- NOT LOGGED IN -->
+            <a href="{% url 'login' %}" class="cl-auth-login">Login</a>
+            <a href="{% url 'register' %}" class="cl-auth-register">Register</a>
+
         {% endif %}
 
-        </div>
+        <!-- MOBILE SEARCH TOGGLE -->
+        <button class="cl-mob-toggle" id="mob-search-toggle" aria-label="Search">
+            <i class="bi bi-search"></i>
+        </button>
+
     </div>
 </nav>
 
-<!-- PAGE CONTENT -->
-<div class="container mt-4">
-    {% block content %}{% endblock %}
+<!-- MOBILE SEARCH BAR -->
+<div class="cl-mob-search hidden" id="mob-search">
+    <form action="{% url 'search' %}" method="GET">
+        <div class="cl-search-wrap">
+            <i class="bi bi-search cl-search-ico"></i>
+            <input
+                class="cl-search-input"
+                type="text"
+                name="keyword"
+                placeholder="Search cars..."
+                autocomplete="off"
+                id="mob-search-input"
+            >
+            <button type="submit" class="cl-search-btn">Go</button>
+        </div>
+    </form>
 </div>
 
+<!-- PAGE CONTENT -->
+<main class="cl-main">
+    <div class="cl-container">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
 <!-- FOOTER -->
-<footer class="car-footer text-center mt-5 py-3">
-    <p>Django Car Platform built with ❤ by 
-        <a href="https://www.linkedin.com/in/om-prakash-bisoi-08438b321" target="_blank">Om Prakash Bisoi</a>
+<footer class="cl-footer">
+    <p>
+        Car Lelo &mdash; Built with ❤ by
+        <a href="https://www.linkedin.com/in/om-prakash-bisoi-08438b321" target="_blank" rel="noopener">
+            Om Prakash Bisoi
+        </a>
     </p>
 </footer>
 
-<!-- BOOTSTRAP JS -->
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- MARK NOTIFICATIONS AS READ -->
 <script>
-function markNotificationsRead() {
-    fetch("{% url 'notification:mark_as_read' %}")
-        .then(res => res.json())
-        .then(() => {
-            let badge = document.getElementById("notif-badge");
-            if (badge) badge.style.display = "none";
-        });
-}
+// NAVBAR SCROLL SHADOW
+window.addEventListener('scroll', function() {
+    document.getElementById('cl-nav').classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+// MOBILE SEARCH TOGGLE
+document.getElementById('mob-search-toggle').addEventListener('click', function() {
+    var mob = document.getElementById('mob-search');
+    var isHidden = mob.classList.toggle('hidden');
+    this.innerHTML = isHidden
+        ? '<i class="bi bi-search"></i>'
+        : '<i class="bi bi-x-lg"></i>';
+    if (!isHidden) {
+        document.getElementById('mob-search-input').focus();
+    }
+});
+
+// CLOSE MOBILE SEARCH ON ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var mob = document.getElementById('mob-search');
+        if (!mob.classList.contains('hidden')) {
+            mob.classList.add('hidden');
+            document.getElementById('mob-search-toggle').innerHTML = '<i class="bi bi-search"></i>';
+        }
+    }
+});
 </script>
 
 </body>

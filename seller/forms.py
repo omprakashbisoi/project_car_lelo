@@ -21,7 +21,7 @@ from location.models import Location
 class CarDetailForm(forms.ModelForm):
     class Meta:
         model = CarDetail
-        exclude = ("seller","car_location","is_sold","is_available")
+        exclude = ("seller","car_location","is_sold","is_available","sold_at")
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Location

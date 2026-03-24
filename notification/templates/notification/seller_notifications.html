@@ -204,7 +204,7 @@
                 <span class="sn-time">{{ notif.created_at|timesince }} ago</span>
             </div>
 
-            <div class="sn-car">🚗 {{ notif.car.brand }} {{ notif.car.car_model }}</div>
+            <div class="sn-car">{{ notif.car.brand }} {{ notif.car.car_model }}</div>
 
             {% if notif.request_type == 'contact_request' %}
                 <span class="sn-chip">📞 Contact Request</span>

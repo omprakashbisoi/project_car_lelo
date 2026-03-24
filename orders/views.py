@@ -1,5 +1,16 @@
-from django.shortcuts import render
-
+from django.shortcuts import render,redirect,get_object_or_404
+from seller.models import CarDetail
+from notification.models import Notification
+from django.contrib.auth.decorators import login_required
+from .models import Order
 # Create your views here.
-def order_view(request,car_id):
+@login_required
+def order_view(request):
+    orders = Order.objects.filter(user=request.user)
+    context ={
+        "orders":orders,
+    }
+    return render(request, 'order/order_view.html', context)
+
+def booking_view(request,car_id):
     pass

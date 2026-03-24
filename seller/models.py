@@ -110,9 +110,10 @@ class CarDetail(models.Model):
 
     is_available = models.BooleanField(default=True)
     is_sold = models.BooleanField(default=False)
+    sold_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+ 
     def __str__(self):
         return f"{self.seller.username} -- {self.brand} {self.car_model}"
 

@@ -29,3 +29,4 @@ def get_lat_lon(city, state, pin):
         print("Error fetching location:", e)
 
     return None, None
+

@@ -106,7 +106,6 @@ class Order(models.Model):
             self.car_name = str(self.car)
             self.car_price = self.car.price
             self.seller_name = str(self.car.seller)
-
         super().save(*args, **kwargs)
 
     def __str__(self):

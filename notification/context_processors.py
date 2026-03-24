@@ -9,20 +9,20 @@ def notification_data(request):
             'recent_notifications': [],
         }
 
+    # Buyer sees: responses they received (contact_shared, buy_confirmation)
     buyer_qs = Notification.objects.filter(
         buyer=request.user,
         visible_to='buyer'
     )
+
+    # Seller sees: incoming pending requests only
     seller_qs = Notification.objects.filter(
         seller=request.user,
-        visible_to='seller'
-    )
-    both_qs = Notification.objects.filter(
-        Q(buyer=request.user) | Q(seller=request.user),
-        visible_to='both'
+        visible_to='seller',
+        status='pending'
     )
 
-    all_notifications = (buyer_qs | seller_qs | both_qs).distinct().order_by('-created_at')
+    all_notifications = (buyer_qs | seller_qs).distinct().order_by('-created_at')
 
     unread_count = all_notifications.filter(is_read=False).count()
     recent_notifications = all_notifications[:5]

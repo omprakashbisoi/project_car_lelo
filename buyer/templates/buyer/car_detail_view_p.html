@@ -234,14 +234,18 @@
                 <div class="text-muted">Inclusive of all charges</div>
 
                 <hr>
-
-                <form method="POST" action="{% url 'notifications:contact_request' car.id %}">
-                    {% csrf_token %}
-                    <button class="btn btn-primary w-100">
-                        Contact Seller
-                    </button>
-                </form>
-
+                {% if car.is_sold %}
+                        <button class="btn btn-primary w-100">
+                            Sold Out
+                        </button>
+                {% else %}
+                    <form method="POST" action="{% url 'notification:contact_request' car.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-primary w-100">
+                            Contact Seller
+                        </button>
+                    </form>
+                {% endif %}
             </div>
 
         </div>

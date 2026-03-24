@@ -178,11 +178,7 @@ def user_login(request):
 
             if user:
                 login(request, user)
-
-                if user.role == "seller":
-                    return redirect("seller_dashboard")
-                else:
-                    return redirect("buyer")
+                return redirect("buyer")
 
             return render(request, "accounts/login.html", {
                 'form': form,

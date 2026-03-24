@@ -37,6 +37,11 @@
                    class="card-img-top car-img"
                    alt="No Image">
             {% endif %}
+            {% if car.is_sold %}
+                    <span class="badge bg-dark image-badge">
+                        Sold
+                    </span>
+            {% endif %}
           {% endwith %}
 
           <!-- OVERLAY -->

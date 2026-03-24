@@ -63,6 +63,11 @@
             <i class="fa-solid fa-car"></i>
             Car Listings
         </a>
+        <a href="{% url 'sold_car_view' %}"
+           class="{% if '/sold_car_view/' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-car"></i>
+            Sold Cars
+        </a>
 
         <a href="{% url 'uploded_image_view' %}"
            class="{% if '/uploded_image_view/' in request.path %}active{% endif %}">

@@ -7,6 +7,7 @@ from location.utils import get_lat_lon
 from django.contrib import messages
 from django.db.models import F
 from django.db.models.functions import ACos, Cos, Sin, Radians
+from django.http import JsonResponse
 
 # Create your views here.
 @login_required
@@ -82,17 +83,23 @@ def dashboard(request):
         'sold_car_count':sold_car_count,
     }
     return render(request,'seller/dashboard/dashboard.html',context)
-
+def sold_car_view(request):
+    user = request.user
+    cars = CarDetail.objects.filter(seller=user,is_sold=True).order_by('-id')
+    context = {
+        'cars':cars,
+    }
+    return render(request,'seller/dashboard/slod_car_view.html',context)
 
 def detail_view(request):
-    cars = CarDetail.objects.filter(seller=request.user)
+    cars = CarDetail.objects.filter(seller=request.user,is_sold=False).order_by('-id')
     context = {
         'cars': cars,
     }
 
     return render(request, 'seller/dashboard/car_detail_view.html', context)
 
-from django.http import JsonResponse
+
 
 def toggle_car_avalibility(request, car_id):
     if request.method == "POST":
@@ -115,12 +122,12 @@ def edit_car(request,car_id):
 
     if car.seller != request.user:
         messages.error(request,"You are not allowed to edit this car")
-        return redirect('seller')
+        return redirect('buyer')
 
     if request.method == "POST":
         form = CarDetailForm(request.POST,request.FILES,instance=car)
         if form.is_valid():
-            updated_car = form.save()
+            form.save()
             messages.success(request,"Car updated successfully")
             return redirect('detail_view')
     else:
@@ -215,7 +222,6 @@ def uploaded_image_edit(request, image_id):
 
     else:
         form = ImageUploadForm(instance=image)
-
     context = {
         "form": form,
         "image": image
@@ -231,7 +237,7 @@ def uploaded_image_delete(request, image_id):
 
     if image.car.seller != request.user:
         messages.error(request, "You are not allowed to delete this image")
-        return redirect('seller')
+        return redirect('buyer')
 
     if request.method == "POST":
         image.image.delete(save=False)
