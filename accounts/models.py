@@ -37,10 +37,11 @@ class CustomUser(AbstractUser):
         return self.username
 
 class EmailOTP(models.Model):
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True,db_index=True)
     otp = models.CharField(max_length=6)
     expiry_time = models.DateTimeField()
     resend_count = models.PositiveIntegerField(default=0)
+    last_sent_at = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
 
     def is_expired(self):
@@ -48,16 +49,16 @@ class EmailOTP(models.Model):
 
     def __str__(self):
         return self.email
+
 class PasswordResetOTP(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
     expiry_time = models.DateTimeField()
     resend_count = models.PositiveIntegerField(default=0)
+    last_sent_at = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     def is_expired(self):
         return timezone.now() > self.expiry_time
     def __str__(self):
-        return f"{self.user.username}-{self.otp}"
-
-
+        return f"{self.user.username} OTP"
