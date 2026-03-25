@@ -11,6 +11,3 @@ def order_view(request):
         "orders":orders,
     }
     return render(request, 'order/order_view.html', context)
-
-def booking_view(request,car_id):
-    pass

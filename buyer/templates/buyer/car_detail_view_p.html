@@ -3,268 +3,566 @@
 
 {% block content %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
-    body {
-        background-color: #f6f7fb;
-        font-family: 'Segoe UI', sans-serif;
-    }
 
-    /* ===== CONTAINER ===== */
-    .main-container {
-        margin-top: 30px;
-    }
+  :root {
+    --accent:    #f5c518;
+    --accent-d:  #e0b000;
+    --orange:    #ff6b00;
+    --orange-d:  #e55e00;
+    --bg:        #f6f7fb;
+    --surface:   #ffffff;
+    --border:    #ebebeb;
+    --text:      #111111;
+    --muted:     #888888;
+    --font:      'Plus Jakarta Sans', sans-serif;
+    --radius:    18px;
+  }
 
-    /* ===== IMAGE SECTION ===== */
-    .image-card {
-        background: #fff;
-        border-radius: 18px;
-        padding: 18px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-        position: relative;
-    }
+  * { box-sizing: border-box; }
 
-    .car-image {
-        width: 100%;
-        height: 420px;
-        object-fit: cover;
-        border-radius: 14px;
-        transition: 0.4s;
-    }
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text);
+  }
 
-    .thumb-container {
-        margin-top: 12px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
+  /* ---- PAGE WRAP ---- */
+  .detail-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+  }
 
-    .thumb-img {
-        width: 80px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 10px;
-        cursor: pointer;
-        opacity: 0.7;
-        border: 2px solid transparent;
-        transition: 0.3s;
-    }
+  /* ---- BREADCRUMB ---- */
+  .breadcrumb-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
 
-    .thumb-img:hover,
-    .thumb-img.active {
-        opacity: 1;
-        border: 2px solid #ff6b00;
-        transform: scale(1.05);
-    }
+  .breadcrumb-row a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
 
-    /* ===== WISHLIST ===== */
-    .wishlist-btn {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        backdrop-filter: blur(10px);
-        background: rgba(255,255,255,0.7);
-        border: none;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: 0.3s;
-    }
+  .breadcrumb-row a:hover { color: var(--text); }
 
-    .wishlist-btn:hover {
-        transform: scale(1.08);
-    }
+  .breadcrumb-row i { font-size: 10px; }
 
-    /* ===== DETAILS ===== */
-    .details-card {
-        background: #fff;
-        border-radius: 18px;
-        padding: 22px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-    }
+  .breadcrumb-row span { color: var(--text); font-weight: 600; }
 
-    .car-title {
-        font-size: 26px;
-        font-weight: 700;
-    }
+  /* ---- LAYOUT ---- */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
 
-    .car-sub {
-        color: #777;
-        font-size: 14px;
-    }
+  /* ---- IMAGE CARD ---- */
+  .image-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    position: relative;
+  }
 
-    /* ===== TAGS ===== */
-    .tag {
-        background: #f1f3f6;
-        padding: 7px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 500;
-        margin-right: 6px;
-        margin-bottom: 6px;
-        display: inline-block;
-    }
+  .main-img-wrap {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f0f0f0;
+    height: 420px;
+  }
 
-    /* ===== PRICE BOX ===== */
-    .price-box {
-        background: #fff;
-        padding: 24px;
-        border-radius: 18px;
-        box-shadow: 0 10px 35px rgba(0,0,0,0.08);
-        position: sticky;
-        top: 100px;
-    }
+  .main-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+    cursor: zoom-in;
+  }
 
-    .price {
-        font-size: 30px;
-        font-weight: 700;
-        color: #111;
-    }
+  .main-img-wrap:hover img { transform: scale(1.04); }
 
-    .btn-primary-custom {
-        background: linear-gradient(135deg, #ff6b00, #ff8c42);
-        border: none;
-        padding: 14px;
-        border-radius: 12px;
-        font-weight: 600;
-        color: #fff;
-        transition: 0.3s;
-    }
+  /* image counter */
+  .img-counter {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 50px;
+    pointer-events: none;
+  }
 
-    .btn-primary-custom:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(255,107,0,0.3);
-    }
+  /* wishlist on image */
+  .wishlist-wrap {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    z-index: 3;
+  }
 
-    /* ===== LOCATION ===== */
-    .location {
-        font-size: 14px;
-        color: #666;
-        margin-top: 8px;
-    }
+  .wishlist-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: #aaa;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 
-    /* ===== MOBILE ===== */
-    @media (max-width: 768px) {
-        .car-image {
-            height: 260px;
-        }
+  .wishlist-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  }
 
-        .price-box {
-            position: static;
-            margin-top: 15px;
-        }
+  .wishlist-btn .bi-heart-fill { color: #f43f5e; }
+
+  /* thumbnails */
+  .thumb-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .thumb-img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    opacity: 0.65;
+    border: 2px solid transparent;
+    transition: opacity 0.2s, border-color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .thumb-img:hover { opacity: 0.9; transform: scale(1.04); }
+
+  .thumb-img.active {
+    opacity: 1;
+    border-color: var(--orange);
+    transform: scale(1.04);
+  }
+
+  /* ---- RIGHT COLUMN ---- */
+  .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 90px;
+  }
+
+  /* details card */
+  .details-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .car-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+
+  .car-name {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .car-year {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  /* spec tags */
+  .tags-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .spec-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f5f5f5;
+    border: 1px solid #ebebeb;
+    color: #444;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 13px;
+    border-radius: 50px;
+  }
+
+  .spec-tag i { color: var(--orange); font-size: 13px; }
+
+  /* location */
+  .location-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--muted);
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .location-row i { color: var(--orange); font-size: 15px; }
+
+  /* price card */
+  .price-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .price-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .price-val {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .price-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .sep { height: 1px; background: var(--border); margin: 18px 0; }
+
+  /* CTA button */
+  .btn-contact {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--orange), #ff8c42);
+    color: #fff;
+    transition: transform 0.25s, box-shadow 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-contact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255,107,0,0.32);
+  }
+
+  .btn-sold {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    background: #f1f1f1;
+    color: #999;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* seller note */
+  .seller-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
+  /* ---- LIGHTBOX ---- */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .lightbox.open { display: flex; }
+
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 12px;
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .lightbox-close:hover { background: rgba(255,255,255,0.25); }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 900px) {
+    .detail-grid {
+      grid-template-columns: 1fr;
     }
+    .right-col { position: static; }
+    .main-img-wrap { height: 280px; }
+  }
+
+  @media (max-width: 600px) {
+    .detail-page { padding: 20px 14px 60px; }
+    .car-name { font-size: 20px; }
+    .price-val { font-size: 26px; }
+  }
 
 </style>
 
-<div class="container main-container">
+<div class="detail-page">
 
-    <div class="row g-4">
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb-row">
+    <a href="/">Home</a>
+    <i class="bi bi-chevron-right"></i>
+    <a href="/buyer/">Listings</a>
+    <i class="bi bi-chevron-right"></i>
+    <span>{{ car.brand }} {{ car.car_model }}</span>
+  </div>
 
-        <!-- LEFT -->
-        <div class="col-lg-7">
+  <div class="detail-grid">
 
-            <div class="image-card">
+    <!-- ===== LEFT: IMAGES ===== -->
+    <div class="image-card">
 
-                <!-- WISHLIST -->
-                <form action="{% url 'add_remove_wish' car.id %}" method="POST">
-                    {% csrf_token %}
-                    <button class="wishlist-btn">
-                        {% if is_wishlisted %}
-                            <i class="bi bi-heart-fill text-danger fs-5"></i>
-                        {% else %}
-                            <i class="bi bi-heart fs-5"></i>
-                        {% endif %}
-                    </button>
-                </form>
-
-                <!-- MAIN IMAGE -->
-                {% if imgs %}
-                    <img id="mainImage" src="{{ imgs.first.car_image.url }}" class="car-image">
-                {% else %}
-                    <img src="{% static 'images/default-car.jpg' %}" class="car-image">
-                {% endif %}
-
-                <!-- THUMB -->
-                <div class="thumb-container">
-                    {% for img in imgs %}
-                        {% if img.car_image %}
-                            <img src="{{ img.car_image.url }}"
-                                 class="thumb-img"
-                                 onclick="changeImage(this)">
-                        {% endif %}
-                    {% endfor %}
-                </div>
-
-            </div>
-
+      <!-- WISHLIST -->
+       {% if not car.is_sold %}
+      <form action="{% url 'add_remove_wish' car.id %}" method="POST" style="display:contents;">
+        {% csrf_token %}
+        <div class="wishlist-wrap">
+          <button class="wishlist-btn" type="submit" aria-label="Wishlist">
+            {% if is_wishlisted %}
+              <i class="bi bi-heart-fill"></i>
+            {% else %}
+              <i class="bi bi-heart"></i>
+            {% endif %}
+          </button>
         </div>
+      </form>
+      {% endif %}
 
-        <!-- RIGHT -->
-        <div class="col-lg-5">
-
-            <!-- DETAILS -->
-            <div class="details-card">
-
-                <div class="car-title">{{ car.brand }} {{ car.model }}</div>
-                <div class="car-sub">{{ car.year }}</div>
-
-                <!-- TAGS -->
-                <div class="mt-3">
-                    <span class="tag">{{ car.kilometers }} km</span>
-                    <span class="tag">Manual</span>
-                    <span class="tag">{{ car.fuel_type }}</span>
-                    <span class="tag">{{ car.variant }}</span>
-                </div>
-
-                <!-- LOCATION -->
-                <div class="location">
-                    📍 {{ car.car_location.city }}, {{ car.car_location.state }}
-                </div>
-
-            </div>
-
-            <!-- PRICE -->
-            <div class="price-box mt-3">
-
-                <div class="price">₹ {{ car.price }}</div>
-                <div class="text-muted">Inclusive of all charges</div>
-
-                <hr>
-                {% if car.is_sold %}
-                        <button class="btn btn-primary w-100">
-                            Sold Out
-                        </button>
-                {% else %}
-                    <form method="POST" action="{% url 'notification:contact_request' car.id %}">
-                        {% csrf_token %}
-                        <button class="btn btn-primary w-100">
-                            Contact Seller
-                        </button>
-                    </form>
-                {% endif %}
-            </div>
-
+      <!-- MAIN IMAGE -->
+      <div class="main-img-wrap" onclick="openLightbox()">
+        {% if imgs %}
+          <img id="mainImage" src="{{ imgs.first.car_image.url }}" alt="{{ car.brand }} {{ car.car_model }}">
+        {% else %}
+          <img id="mainImage" src="{% static 'images/default-car.jpg' %}" alt="No Image">
+        {% endif %}
+        <div class="img-counter" id="imgCounter">
+          <i class="bi bi-images"></i> 1 / {{ imgs|length }}
         </div>
+      </div>
+
+      <!-- THUMBNAILS -->
+      <div class="thumb-row">
+        {% for img in imgs %}
+          {% if img.car_image %}
+            <img src="{{ img.car_image.url }}"
+                 class="thumb-img {% if forloop.first %}active{% endif %}"
+                 onclick="changeImage(this, {{ forloop.counter }}, {{ imgs|length }})"
+                 alt="Image {{ forloop.counter }}">
+          {% endif %}
+        {% endfor %}
+      </div>
 
     </div>
 
+    <!-- ===== RIGHT COLUMN ===== -->
+    <div class="right-col">
+
+      <!-- DETAILS CARD -->
+      <div class="details-card">
+
+        <div class="car-badge">
+          <i class="bi bi-patch-check-fill"></i> Car Lelo Verified
+        </div>
+
+        <div class="car-name">{{ car.brand }} {{ car.car_model }}</div>
+        <div class="car-year">{{ car.year }} &bull; {{ car.variant }}</div>
+
+        <div class="tags-row">
+          <span class="spec-tag"><i class="bi bi-speedometer2"></i> {{ car.kilometers }} km</span>
+          <span class="spec-tag"><i class="bi bi-gear"></i> Manual</span>
+          <span class="spec-tag"><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
+        </div>
+
+        <div class="location-row">
+          <i class="bi bi-geo-alt-fill"></i>
+          {{ car.car_location }}
+        </div>
+
+      </div>
+
+      <!-- PRICE CARD -->
+      <div class="price-card">
+
+        <div class="price-label">Asking Price</div>
+        <div class="price-val">₹ {{ car.price }}</div>
+        <div class="price-note">Inclusive of all charges</div>
+
+        <div class="sep"></div>
+
+        {% if car.is_sold %}
+          <button class="btn-sold" disabled>
+            <i class="bi bi-x-circle"></i> Sold Out
+          </button>
+        {% else %}
+          <form method="POST" action="{% url 'notification:contact_request' car.id %}">
+            {% csrf_token %}
+            <button class="btn-contact" type="submit">
+              <i class="bi bi-telephone-fill"></i> Contact Seller
+            </button>
+          </form>
+        {% endif %}
+
+        <div class="seller-note">
+          <i class="bi bi-shield-check"></i> Safe &amp; Verified Transaction
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
-<!-- JS -->
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">
+    <i class="bi bi-x-lg"></i>
+  </button>
+  <img id="lightboxImg" src="" alt="Full view">
+</div>
+
 <script>
-function changeImage(element) {
-    document.getElementById("mainImage").src = element.src;
-
-    document.querySelectorAll(".thumb-img").forEach(img => {
-        img.classList.remove("active");
+  // Thumbnail switch
+  function changeImage(el, index, total) {
+    var main = document.getElementById('mainImage');
+    main.src = el.src;
+    document.getElementById('lightboxImg').src = el.src;
+    document.querySelectorAll('.thumb-img').forEach(function(t) {
+      t.classList.remove('active');
     });
+    el.classList.add('active');
+    document.getElementById('imgCounter').innerHTML =
+      '<i class="bi bi-images"></i> ' + index + ' / ' + total;
+  }
 
-    element.classList.add("active");
-}
+  // Lightbox
+  function openLightbox() {
+    var src = document.getElementById('mainImage').src;
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ESC to close lightbox
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // Set first thumb active and init lightbox src
+  var firstThumb = document.querySelector('.thumb-img');
+  if (firstThumb) {
+    document.getElementById('lightboxImg').src = firstThumb.src;
+  }
 </script>
 
 {% endblock %}

@@ -1,177 +1,674 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 
-<div class="container mt-5">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-    <!-- TOP BAR -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h3 class="fw-bold">My Profile</h3>
+:root {
+    --ink:        #0f1117;
+    --ink-2:      #3d3f4e;
+    --ink-3:      #8b8fa8;
+    --surface:    #ffffff;
+    --surface-2:  #f4f5f9;
+    --surface-3:  #eceef5;
+    --accent:     #1a56ff;
+    --accent-bg:  #eef2ff;
+    --danger:     #dc2626;
+    --danger-bg:  #fee2e2;
+    --success:    #16a34a;
+    --success-bg: #dcfce7;
+    --warn:       #d97706;
+    --warn-bg:    #fef3c7;
+    --radius:     16px;
+    --radius-sm:  10px;
+    --shadow:     0 4px 24px rgba(15,17,23,0.08);
+    --shadow-lg:  0 12px 40px rgba(15,17,23,0.13);
+    --font:       'Sora', sans-serif;
+    --mono:       'JetBrains Mono', monospace;
+    --tr:         0.22s cubic-bezier(0.4,0,0.2,1);
+}
 
-        {% comment %} {% if user.profile.role == "seller" %}
-        {% endif %} {% endcomment %}
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
-            Go to Dashboard →
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { font-family: var(--font); background: var(--surface-2); }
+
+/* ── PAGE ── */
+.pf-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+}
+
+/* ── PAGE HEADER ── */
+.pf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 12px;
+}
+
+.pf-header-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.4px;
+}
+
+.pf-dashboard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--surface-3);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: var(--tr);
+}
+
+.pf-dashboard-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+    background: var(--accent-bg);
+}
+
+/* ── TABS ── */
+.pf-tabs {
+    display: flex;
+    background: var(--surface-3);
+    border-radius: 14px;
+    padding: 5px;
+    gap: 4px;
+    margin-bottom: 28px;
+    width: fit-content;
+}
+
+.pf-tab {
+    padding: 9px 20px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    font-family: var(--font);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: var(--tr);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.pf-tab:hover { color: var(--ink); text-decoration: none; }
+
+.pf-tab.active {
+    background: var(--surface);
+    color: var(--accent);
+    box-shadow: var(--shadow);
+    font-weight: 600;
+}
+
+/* ── LAYOUT ── */
+.pf-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .pf-layout { grid-template-columns: 1fr; }
+    .pf-tabs { width: 100%; overflow-x: auto; }
+}
+
+/* ── CARD ── */
+.pf-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--surface-3);
+    padding: 24px;
+    transition: var(--tr);
+}
+
+/* ── LEFT: AVATAR CARD ── */
+.pf-avatar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.pf-avatar-ring {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin-bottom: 16px;
+    cursor: pointer;
+}
+
+.pf-avatar-img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--surface-3);
+    display: block;
+    transition: var(--tr);
+}
+
+.pf-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0,0,0,0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--tr);
+    border: 3px solid transparent;
+}
+
+.pf-avatar-ring:hover .pf-avatar-img {
+    filter: brightness(0.75);
+}
+
+.pf-avatar-ring:hover .pf-avatar-overlay {
+    background: rgba(0,0,0,0.28);
+}
+
+.pf-avatar-edit-icon {
+    color: #fff;
+    font-size: 22px;
+    opacity: 0;
+    transition: var(--tr);
+    transform: scale(0.8);
+}
+
+.pf-avatar-ring:hover .pf-avatar-edit-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* FALLBACK AVATAR (no image) */
+.pf-avatar-fallback {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, #7b93ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: #fff;
+    border: 3px solid var(--surface-3);
+    transition: var(--tr);
+    cursor: pointer;
+}
+
+.pf-avatar-ring:hover .pf-avatar-fallback {
+    filter: brightness(0.8);
+}
+
+/* HIDDEN FILE INPUT */
+#avatar-input { display: none; }
+
+/* UPLOAD HINT */
+.pf-avatar-hint {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+/* PREVIEW STRIP */
+.pf-avatar-preview-strip {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent-bg);
+    border: 1px solid rgba(26,86,255,0.15);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.pf-avatar-preview-strip.show { display: flex; }
+
+.pf-preview-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.pf-preview-text {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pf-preview-cancel {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--ink-3);
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: var(--tr);
+}
+
+.pf-preview-cancel:hover { color: var(--danger); }
+
+/* USERNAME / EMAIL */
+.pf-user-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 3px;
+    text-align: center;
+}
+
+.pf-user-email {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: var(--mono);
+}
+
+.pf-role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--mono);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.pf-signout-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--danger);
+    background: var(--danger-bg);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-decoration: none;
+    transition: var(--tr);
+    cursor: pointer;
+}
+
+.pf-signout-btn:hover {
+    background: var(--danger);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ── RIGHT: FORM CARD ── */
+.pf-form-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 20px;
+    letter-spacing: -0.2px;
+}
+
+.pf-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 500px) {
+    .pf-field-grid { grid-template-columns: 1fr; }
+}
+
+.pf-field { display: flex; flex-direction: column; gap: 5px; }
+.pf-field.full { grid-column: 1 / -1; }
+
+.pf-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.pf-input,
+.pf-textarea {
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1.5px solid var(--surface-3);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    outline: none;
+    transition: var(--tr);
+    width: 100%;
+}
+
+.pf-input:focus,
+.pf-textarea:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(26,86,255,0.1);
+}
+
+.pf-input[readonly] {
+    color: var(--ink-3);
+    cursor: not-allowed;
+    background: var(--surface-3);
+}
+
+.pf-textarea { resize: vertical; min-height: 90px; }
+
+/* FORM ACTIONS */
+.pf-form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 22px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.pf-delete-btn {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--danger);
+    background: transparent;
+    border: 1.5px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: 9px 18px;
+    cursor: pointer;
+    transition: var(--tr);
+}
+
+.pf-delete-btn:hover {
+    background: var(--danger);
+    color: #fff;
+}
+
+.pf-save-btn {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: var(--tr);
+    box-shadow: 0 2px 10px rgba(26,86,255,0.25);
+}
+
+.pf-save-btn:hover {
+    background: #1344d4;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(26,86,255,0.3);
+}
+
+/* ── SECTION PANELS ── */
+.pf-panel { display: none; }
+.pf-panel.active { display: block; }
+</style>
+
+<div class="pf-page">
+
+    <!-- PAGE HEADER -->
+    <div class="pf-header">
+        <h1 class="pf-header-title">My Profile</h1>
+        {% if user.role == "seller" %}
+        <a href="{% url 'dashboard' %}" class="pf-dashboard-btn">
+            <i class="bi bi-speedometer2"></i> Dashboard
         </a>
+        {% endif %}
     </div>
 
+    <!-- TABS -->
+    <div class="pf-tabs">
+        <button class="pf-tab active" onclick="switchTab('profile', this)">
+            👤 Profile
+        </button>
+        <a href="{% url 'wishlist_view' %}" class="pf-tab">
+            ❤️ Wishlist
+        </a>
+        <button class="pf-tab" onclick="switchTab('orders', this)">
+            📦 Orders
+        </button>
+    </div>
 
-    <!-- NAVIGATION PILLS -->
-    <ul class="nav nav-pills mb-4 gap-2">
+    <!-- PROFILE PANEL -->
+    <div id="panel-profile" class="pf-panel active">
+        <div class="pf-layout">
 
-        <li class="nav-item">
-            <a class="nav-link active" href="#">Edit Profile</a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href=" {% url "wishlist_view" %} ">Wishlist</a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href=" {% url "orders" %} ">Orders</a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="#">Bookings</a>
-        </li>
-
-    </ul>
-
-
-    <div class="row g-4">
-
-        <!-- LEFT PROFILE CARD -->
-        <div class="col-md-4 col-lg-3">
-
-            <div class="card shadow-sm border-0 text-center p-4">
-
-                {% if profile.profile_image %}
-                <img src="{{ profile.profile_image.url }}"
-                     class="rounded-circle mx-auto mb-3 border"
-                     width="120"
-                     height="120"
-                     style="object-fit:cover;">
-                {% else %}
-                <img src="https://via.placeholder.com/120"
-                     class="rounded-circle mx-auto mb-3 border">
-                {% endif %}
-
-                <h5 class="fw-semibold">{{ user.username }}</h5>
-                <p class="text-muted small mb-3">{{ user.email }}</p>
-
-                <form method="POST" enctype="multipart/form-data">
+            <!-- LEFT: AVATAR CARD -->
+            <div class="pf-card">
+                <form method="POST" enctype="multipart/form-data" id="avatar-form">
                     {% csrf_token %}
-                    <input type="file"
-                           name="profile_image"
-                           class="form-control form-control-sm mb-3">
+                    <input type="file" name="profile_image" id="avatar-input" accept="image/*">
+
+                    <div class="pf-avatar-wrap">
+
+                        <!-- AVATAR CLICK TO CHANGE -->
+                        <div class="pf-avatar-ring" onclick="document.getElementById('avatar-input').click()">
+                            {% if profile.profile_image %}
+                                <img src="{{ profile.profile_image.url }}"
+                                     class="pf-avatar-img"
+                                     id="avatar-display"
+                                     alt="Profile photo">
+                            {% else %}
+                                <div class="pf-avatar-fallback" id="avatar-display">
+                                    {{ user.username|first|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="pf-avatar-overlay">
+                                <i class="bi bi-camera pf-avatar-edit-icon"></i>
+                            </div>
+                        </div>
+
+                        <p class="pf-avatar-hint">Click photo to change</p>
+
+                        <!-- PREVIEW STRIP (shown after file selected) -->
+                        <div class="pf-avatar-preview-strip" id="avatar-preview-strip">
+                            <img src="" class="pf-preview-thumb" id="avatar-preview-thumb" alt="">
+                            <span class="pf-preview-text" id="avatar-preview-name"></span>
+                            <button type="button" class="pf-preview-cancel" onclick="cancelAvatar()">✕</button>
+                        </div>
+
+                        <div class="pf-user-name">{{ user.username }}</div>
+                        <div class="pf-user-email">{{ user.email }}</div>
+
+                        <span class="pf-role-chip">
+                            ✦ {{ user.profile.role|default:"buyer"|title }}
+                        </span>
+
+                        {% if profile.profile_image %}
+                        <button type="submit" name="upload_image" class="pf-save-btn w-100 mb-3" id="avatar-save-btn" style="display:none;">
+                            Save Photo
+                        </button>
+                        {% else %}
+                        <button type="submit" name="upload_image" class="pf-save-btn w-100 mb-3" id="avatar-save-btn" style="display:none;">
+                            Upload Photo
+                        </button>
+                        {% endif %}
+
+                        <a href="{% url 'logout' %}" class="pf-signout-btn">
+                            Sign Out
+                        </a>
+
+                    </div>
                 </form>
-
-                <a href="{% url 'logout' %}" class="btn btn-danger w-100">
-                    Sign Out
-                </a>
-
             </div>
 
-        </div>
-
-
-        <!-- RIGHT PROFILE FORM -->
-        <div class="col-md-8 col-lg-9">
-
-            <div class="card shadow-sm border-0 p-4">
-
-                <h5 class="mb-4 fw-bold">Profile Details</h5>
+            <!-- RIGHT: PROFILE FORM -->
+            <div class="pf-card">
+                <div class="pf-form-title">Profile Details</div>
 
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
-                    <div class="row g-3">
+                    <div class="pf-field-grid">
 
-                        <div class="col-md-6">
-                            <label class="form-label">Username</label>
-                            <input class="form-control"
-                                   value="{{ user.username }}"
-                                   readonly>
+                        <div class="pf-field">
+                            <label class="pf-label">Username</label>
+                            <input class="pf-input" value="{{ user.username }}" readonly>
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email"
-                                   class="form-control"
-                                   value="{{ user.email }}"
-                                   readonly>
+                        <div class="pf-field">
+                            <label class="pf-label">Email</label>
+                            <input class="pf-input" type="email" value="{{ user.email }}" readonly>
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Mobile</label>
-                            <input type="tel"
+                        <div class="pf-field">
+                            <label class="pf-label">Mobile</label>
+                            <input class="pf-input"
+                                   type="tel"
                                    name="mobile"
-                                   class="form-control"
                                    value="{{ profile_form.mobile.value|default:'' }}"
-                                   placeholder="Enter mobile"
-                                   required>
+                                   placeholder="Enter mobile number">
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">City</label>
-                            <input type="text"
+                        <div class="pf-field">
+                            <label class="pf-label">City</label>
+                            <input class="pf-input"
+                                   type="text"
                                    name="city"
-                                   class="form-control"
-                                   value="{{ location_form.city.value }}"
-                                   placeholder="City"
-                                   required>
+                                   value="{{ location_form.city.value|default:'' }}"
+                                   placeholder="Your city">
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">State</label>
-                            <input type="text"
+                        <div class="pf-field">
+                            <label class="pf-label">State</label>
+                            <input class="pf-input"
+                                   type="text"
                                    name="state"
-                                   class="form-control"
                                    value="{{ location_form.state.value|default:'' }}"
-                                   required>
+                                   placeholder="Your state">
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">PIN</label>
-                            <input type="text"
+                        <div class="pf-field">
+                            <label class="pf-label">PIN Code</label>
+                            <input class="pf-input"
+                                   type="text"
                                    name="pin"
-                                   class="form-control"
                                    value="{{ location_form.pin.value|default:'' }}"
-                                   required>
+                                   placeholder="PIN code">
                         </div>
 
-                        <div class="col-12">
-                            <label class="form-label">Address</label>
-                            <textarea name="address"
-                                      class="form-control"
-                                      rows="3">{{ location_form.address.value|default:'' }}</textarea>
+                        <div class="pf-field full">
+                            <label class="pf-label">Address</label>
+                            <textarea class="pf-textarea"
+                                      name="address"
+                                      placeholder="Full address">{{ location_form.address.value|default:'' }}</textarea>
                         </div>
 
                     </div>
 
-                    <!-- ACTIONS -->
-                    <div class="d-flex justify-content-between mt-4">
-
+                    <div class="pf-form-actions">
                         <form method="POST" action="{% url 'delete_profile' %}">
                             {% csrf_token %}
-                            <button class="btn btn-outline-danger">
-                                Delete Profile
+                            <button type="submit" class="pf-delete-btn">
+                                Delete Account
                             </button>
                         </form>
-
-                        <button type="submit" class="btn btn-primary px-4">
+                        <button type="submit" name="update_profile" class="pf-save-btn">
                             Save Changes
                         </button>
-
                     </div>
 
                 </form>
-
             </div>
 
         </div>
+    </div>
 
+    <!-- ORDERS PANEL -->
+    <div id="panel-orders" class="pf-panel">
+        {% include 'order/order_view.html' %}
     </div>
 
 </div>
+
+<script>
+// TAB SWITCHER
+function switchTab(panel, btn) {
+    document.querySelectorAll('.pf-panel').forEach(function(p) {
+        p.classList.remove('active');
+    });
+    document.querySelectorAll('.pf-tab').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    document.getElementById('panel-' + panel).classList.add('active');
+    btn.classList.add('active');
+}
+
+// AVATAR PREVIEW
+document.getElementById('avatar-input').addEventListener('change', function() {
+    var file = this.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        // Update preview thumb
+        document.getElementById('avatar-preview-thumb').src = e.target.result;
+
+        // Update main avatar display
+        var display = document.getElementById('avatar-display');
+        if (display.tagName === 'IMG') {
+            display.src = e.target.result;
+        } else {
+            // Was a fallback div — replace with img
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'pf-avatar-img';
+            img.id = 'avatar-display';
+            img.alt = 'Profile photo';
+            display.replaceWith(img);
+        }
+    };
+    reader.readAsDataURL(file);
+
+    // Show file name in strip
+    document.getElementById('avatar-preview-name').textContent = file.name;
+    document.getElementById('avatar-preview-strip').classList.add('show');
+    document.getElementById('avatar-save-btn').style.display = 'block';
+});
+
+// CANCEL AVATAR SELECTION
+function cancelAvatar() {
+    document.getElementById('avatar-input').value = '';
+    document.getElementById('avatar-preview-strip').classList.remove('show');
+    document.getElementById('avatar-save-btn').style.display = 'none';
+}
+</script>
 
 {% endblock %}
