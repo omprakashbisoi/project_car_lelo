@@ -1,113 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'seller/css/car_detail_view.css' %}">
 
-<style>
-body {
-    background: #f6f8fb;
-}
-
-/* CARD */
-.dashboard-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 22px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.05);
-}
-
-/* HEADER */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.page-header h2 {
-    font-weight: 700;
-}
-
-/* BUTTON */
-.btn-add {
-    background: linear-gradient(135deg, #000, #444);
-    color: #fff;
-    border-radius: 10px;
-    padding: 8px 16px;
-    transition: 0.3s;
-}
-
-.btn-add:hover {
-    transform: scale(1.05);
-}
-
-/* TABLE */
-.table thead {
-    background: #111;
-    color: #fff;
-}
-
-.table tbody tr {
-    transition: 0.25s;
-}
-
-.table tbody tr:hover {
-    background: #f9fafc;
-}
-
-/* ACTION */
-.action-icons i {
-    margin: 0 6px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.action-icons i:hover {
-    transform: scale(1.2);
-}
-
-/* TOGGLE */
-.switch {
-    position: relative;
-    width: 50px;
-    height: 26px;
-}
-
-.switch input {
-    display: none;
-}
-
-.slider {
-    position: absolute;
-    inset: 0;
-    background: #e74c3c;
-    border-radius: 50px;
-    transition: 0.3s;
-}
-
-.slider:before {
-    content: "";
-    position: absolute;
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    top: 3px;
-    background: #fff;
-    border-radius: 50%;
-    transition: 0.3s;
-}
-
-input:checked + .slider {
-    background: #28a745;
-}
-
-input:checked + .slider:before {
-    transform: translateX(24px);
-}
-
-.status-text {
-    font-size: 13px;
-    font-weight: 600;
-}
-</style>
 
 <div class="row g-4">
 
@@ -154,6 +50,7 @@ input:checked + .slider:before {
                                         <input type="checkbox"
                                                class="toggle-status"
                                                data-id="{{ car.id }}"
+                                               data-url="{% url 'toggle_car_avalibility' 0 %}"
                                                {% if not car.is_sold %}checked{% endif %}>
                                         <span class="slider"></span>
                                     </label>
@@ -191,6 +88,12 @@ input:checked + .slider:before {
         </div>
     </div>
 </div>
+
+<!-- CSRF Token -->
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<script src="{% static 'seller/js/my_cars.js' %}"></script>
+
 
 <!-- JS -->
 <script>

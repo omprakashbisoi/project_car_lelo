@@ -1,0 +1,85 @@
+body {
+    background: #f6f8fb;
+}
+
+/* WRAPPER */
+.dashboard-container {
+    padding: 10px;
+}
+
+/* HEADER */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.page-header h3 {
+    font-weight: 700;
+}
+
+.page-header span {
+    font-size: 14px;
+    color: #777;
+}
+
+/* CARD GRID */
+.car-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    transition: 0.25s ease;
+}
+
+.car-card:hover {
+    transform: translateY(-4px);
+}
+
+/* IMAGE */
+.car-img {
+    position: relative;
+}
+
+.car-img img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+/* SOLD BADGE */
+.badge-sold {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+/* CONTENT */
+.car-body {
+    padding: 14px;
+}
+
+.car-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.car-price {
+    font-size: 14px;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.empty-box {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+}

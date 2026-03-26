@@ -1,0 +1,98 @@
+body {
+    background: #f6f8fb;
+}
+
+/* CONTAINER */
+.edit-container {
+    max-width: 700px;
+    margin: 50px auto;
+}
+
+/* CARD */
+.edit-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+/* HEADER */
+.edit-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.edit-header h3 {
+    font-weight: 700;
+}
+
+.edit-header p {
+    font-size: 13px;
+    color: #777;
+}
+
+/* IMAGE PREVIEW */
+.image-preview {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.image-preview img {
+    width: 300px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 2px solid #eee;
+    transition: 0.3s;
+}
+
+.image-preview img:hover {
+    transform: scale(1.03);
+}
+
+/* FORM */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+/* INPUT */
+input[type="file"],
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* BUTTON */
+.btn-update {
+    width: 100%;
+    padding: 11px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-update:hover {
+    transform: scale(1.02);
+}
+
+/* CANCEL */
+.btn-cancel {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 12px;
+}
+
+/* ERROR */
+.error-text {
+    font-size: 12px;
+    color: red;
+    margin-top: 4px;
+}

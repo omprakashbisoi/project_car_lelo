@@ -1,51 +1,6 @@
-<!-- seller/dashboard/sidebar.html -->
+{% load static %}
 
-<style>
-.sidebar {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
-
-.sidebar-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #888;
-    margin-bottom: 12px;
-}
-
-.sidebar a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    color: #333;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.25s ease;
-}
-
-.sidebar a i {
-    font-size: 16px;
-}
-
-.sidebar a:hover {
-    background: #f3f5f9;
-    transform: translateX(4px);
-}
-
-.sidebar a.active {
-    background: linear-gradient(135deg, #000, #333);
-    color: #fff;
-}
-
-.sidebar a.active i {
-    color: #fff;
-}
-</style>
+<link rel="stylesheet" href="{% static 'seller/css/sidebar.css' %}">
 
 <div class="col-md-3">
     <div class="sidebar">
@@ -63,6 +18,7 @@
             <i class="fa-solid fa-car"></i>
             Car Listings
         </a>
+
         <a href="{% url 'sold_car_view' %}"
            class="{% if '/sold_car_view/' in request.path %}active{% endif %}">
             <i class="fa-solid fa-car"></i>
