@@ -8,12 +8,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Profile, Location
 from .forms import ProfileUpdateForm, LocationUpdateForm
+from  orders.models import Order
 
 
 @login_required
 def profile_view(request):
     user = request.user
     profile, created = Profile.objects.get_or_create(user=user)
+    orders = Order.objects.filter(user=request.user)
     if hasattr(profile, 'profile_location') and profile.profile_location:
         location = profile.profile_location
     else:
@@ -54,6 +56,7 @@ def profile_view(request):
         "profile": profile,
         "location_form": location_form,
         "location": location,
+        "orders": orders,
     }
 
     return render(request, "user_profile/profile_view.html", context)
