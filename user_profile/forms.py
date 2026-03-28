@@ -1,12 +1,12 @@
 from django import forms
-from .models import Profile
+from accounts.models import CustomUser
 from location.models import Location
 
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
-        model = Profile
-        fields = ["profile_image", "mobile"]
+        model = CustomUser
+        fields = ["profile_image","phone"]
 
 
 class LocationUpdateForm(forms.ModelForm):

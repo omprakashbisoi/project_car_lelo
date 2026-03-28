@@ -116,7 +116,7 @@
                             <input class="pf-input"
                                    type="tel"
                                    name="mobile"
-                                   value="{{ profile_form.mobile.value|default:'' }}"
+                                   value="{{ profile_form.phone.value|default:'' }}"
                                    placeholder="Enter mobile number">
                         </div>
 
@@ -157,12 +157,6 @@
                     </div>
 
                     <div class="pf-form-actions">
-                        <form method="POST" action="{% url 'delete_profile' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="pf-delete-btn">
-                                Delete Account
-                            </button>
-                        </form>
                         <button type="submit" name="update_profile" class="pf-save-btn">
                             Save Changes
                         </button>

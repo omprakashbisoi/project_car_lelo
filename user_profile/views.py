@@ -1,68 +1,59 @@
 from django.shortcuts import render, redirect ,get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Profile
-from .forms import ProfileUpdateForm,LocationUpdateForm
 from location.models import Location
 from location.utils import get_lat_lon
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Profile, Location
-from .forms import ProfileUpdateForm, LocationUpdateForm
+from .forms import ProfileUpdateForm,LocationUpdateForm
 from  orders.models import Order
+from accounts.models import CustomUser
 
 
 @login_required
 def profile_view(request):
-    user = request.user
-    profile, created = Profile.objects.get_or_create(user=user)
+    profile = request.user
     orders = Order.objects.filter(user=request.user)
-    if hasattr(profile, 'profile_location') and profile.profile_location:
-        location = profile.profile_location
-    else:
+
+    if not profile.location:
         location = Location.objects.create()
-        profile.profile_location = location
+        profile.location = location
         profile.save()
+    else:
+        location = profile.location
+
     if request.method == "POST":
-        profile_form = ProfileUpdateForm(
-            request.POST,
-            request.FILES,
-            instance=profile
-        )
-        location_form = LocationUpdateForm(
-            request.POST,
-            instance=location
-        )
-        print(profile_form.errors)
-        print(location_form.errors)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        location_form = LocationUpdateForm(request.POST, instance=location)
+
         if profile_form.is_valid() and location_form.is_valid():
             location = location_form.save(commit=False)
-            lat,lon = get_lat_lon(location.city, location.state, location.pin)
+
+            lat, lon = get_lat_lon(location.city, location.state, location.pin)
             if lat and lon:
                 location.latitude = lat
                 location.longitude = lon
+
             location.save()
+
             profile = profile_form.save(commit=False)
-            profile.profile_location = location
+            profile.location = location
             profile.save()
+
             return redirect("profile")
 
     else:
         profile_form = ProfileUpdateForm(instance=profile)
         location_form = LocationUpdateForm(instance=location)
 
-    context = {
-        "user": user,
+    return render(request, "user_profile/profile_view.html", {
         "profile_form": profile_form,
         "profile": profile,
         "location_form": location_form,
         "location": location,
         "orders": orders,
-    }
+    })
 
-    return render(request, "user_profile/profile_view.html", context)
 @login_required
 def delete_profile(request):
-    profile = get_object_or_404(Profile, user=request.user)
+    profile = get_object_or_404(CustomUser, user=request.user)
 
     if request.method == "POST":
         profile.delete()

@@ -3,10 +3,6 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 
 
-# ==========================
-# 🔹 REGISTRATION (EMAIL ONLY)
-# ==========================
-
 class RegistrationForm(forms.ModelForm):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
@@ -27,10 +23,6 @@ class RegistrationForm(forms.ModelForm):
 
         return email
 
-
-# ==========================
-# 🔹 OTP FORM (COMMON)
-# ==========================
 
 class OTPVerificationForm(forms.Form):
     otp = forms.CharField(
@@ -56,10 +48,6 @@ class OTPVerificationForm(forms.Form):
 
         return otp
 
-
-# ==========================
-# 🔹 COMPLETE REGISTRATION
-# ==========================
 
 class CompleteRegistrationForm(UserCreationForm):
     username = forms.CharField(
@@ -111,9 +99,6 @@ class CompleteRegistrationForm(UserCreationForm):
         return age
 
 
-# ==========================
-# 🔹 LOGIN FORM
-# ==========================
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -131,10 +116,6 @@ class LoginForm(forms.Form):
     )
 
 
-# ==========================
-# 🔹 EMAIL FORM (FORGOT PASSWORD)
-# ==========================
-
 class EmailForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
@@ -143,10 +124,6 @@ class EmailForm(forms.Form):
         })
     )
 
-
-# ==========================
-# 🔹 NEW PASSWORD FORM
-# ==========================
 
 class NewPasswordForm(forms.Form):
     password = forms.CharField(
