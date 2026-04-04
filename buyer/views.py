@@ -6,7 +6,6 @@ from location.models import Location
 from wishlist.models import Wishlist
 # Create your views here.
 
-# Create your tests here.
 def buyer(request):
     cars = CarDetail.objects.filter(is_available=True).prefetch_related('images')
 

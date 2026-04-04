@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Wishlist
-from seller.models import CarDetail,ImageStore
+from seller.models import CarDetail
 
 # Create your views here.
 @login_required

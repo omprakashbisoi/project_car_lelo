@@ -83,6 +83,8 @@ def dashboard(request):
         'sold_car_count':sold_car_count,
     }
     return render(request,'seller/dashboard/dashboard.html',context)
+
+
 def sold_car_view(request):
     user = request.user
     cars = CarDetail.objects.filter(seller=user,is_sold=True).order_by('-id')
@@ -282,7 +284,7 @@ def nearby_cars(request):
         car_location__longitude__isnull=False
     ).annotate(
         distance=6371 * ACos(
-            Cos(Radians(user_lat)) *
+            Cos((user_lat)) *
             Cos(Radians(F('car_location__latitude'))) *
             Cos(Radians(F('car_location__longitude')) - Radians(user_lon)) +
             Sin(Radians(user_lat)) *

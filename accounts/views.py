@@ -17,6 +17,7 @@ from .forms import (
     NewPasswordForm
 )
 
+
 def registration_view(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
@@ -344,8 +345,6 @@ def password_verify_otp(request):
     return render(request, "accounts/password_reset_confirm.html", {"form": form})
 
 
-
-
 def resend_password_otp(request):
     user_id = request.session.get("reset_user")
 
@@ -393,6 +392,7 @@ def resend_password_otp(request):
     )
 
     return redirect('password_verify_otp')
+
 
 def reset_password(request):
     if not request.session.get("otp_verified"):

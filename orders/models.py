@@ -60,7 +60,6 @@ class Booking(models.Model):
         return f"{self.user} booked {self.car}"
 
 
-# ---------------- ORDER MODEL ---------------- #
 
 class Order(models.Model):
     user = models.ForeignKey(
@@ -76,7 +75,6 @@ class Order(models.Model):
         related_name='orders'
     )
 
-    # 🔥 LINK TO BOOKING (IMPORTANT)
     booking = models.OneToOneField(
         Booking,
         on_delete=models.SET_NULL,
@@ -84,7 +82,6 @@ class Order(models.Model):
         blank=True
     )
 
-    # 🔥 SNAPSHOT FIELDS
     car_name = models.CharField(max_length=255)
     car_price = models.DecimalField(max_digits=12, decimal_places=2)
     seller_name = models.CharField(max_length=255)

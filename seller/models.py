@@ -113,7 +113,7 @@ class CarDetail(models.Model):
     sold_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
- 
+
     def __str__(self):
         return f"{self.seller.username} -- {self.brand} {self.car_model}"
 
