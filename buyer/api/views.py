@@ -1,9 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
-from buyer.api.serializers import BuyerCarSerializer
-from seller.models import CarDetail
-from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from django.contrib.auth.decorators import login_required
 from buyer.api.serializers import BuyerCarSerializer
 from seller.models import CarDetail
 

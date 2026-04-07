@@ -1,24 +1,20 @@
-from seller.models import CarDetail,ImageStore
-from django.shortcuts import render,get_object_or_404
+from seller.models import CarDetail, ImageStore
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from seller.models import CarDetail,ImageStore
-from location.models import Location
 from wishlist.models import Wishlist
 # Create your views here.
 
 def buyer(request):
-    cars = CarDetail.objects.filter(is_available=True).prefetch_related('images')
-
-    wishlist_car_ids = set()
+    wishlist_car_ids = []
     if request.user.is_authenticated:
-        wishlist_car_ids = set(
+        wishlist_car_ids = list(
             Wishlist.objects.filter(user=request.user)
             .values_list('car_id', flat=True)
         )
 
     context = {
-        'cars': cars,
         'wishlist_car_ids': wishlist_car_ids,
+        'is_user_authenticated': request.user.is_authenticated,
     }
     return render(request, "buyer/car_showcase.html", context)
 

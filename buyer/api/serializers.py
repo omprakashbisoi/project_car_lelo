@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from wishlist.models import Wishlist
 from seller.models import CarDetail, ImageStore
 
 class CarImageSerializer(serializers.ModelSerializer):
@@ -30,8 +29,4 @@ class BuyerCarSerializer(serializers.ModelSerializer):
             "images",
         ]
 
-class BuyerWishlistSerializer(serializers.ModelSerializer):
-    car = serializers.StringRelatedField()
-    class Meta:
-        model = Wishlist
-        fields = ("id","car",)
+

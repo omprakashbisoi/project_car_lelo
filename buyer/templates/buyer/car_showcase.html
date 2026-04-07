@@ -2,19 +2,17 @@
 {% load static %}
 
 {% block content %}
-
-<link rel="stylesheet" href=" {% static "buyer/css/car_showcase.css" %} ">
+<link rel="stylesheet" href="{% static 'buyer/css/car_showcase.css' %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-
+{{ wishlist_car_ids|json_script:"wishlist-data" }}
+{{ is_user_authenticated|json_script:"auth-data" }}
 
 <div class="listings-page">
   <div class="listings-inner">
-
-    <!-- HEADER -->
     <div class="listings-header">
       <div>
         <h2>Latest Listings</h2>
@@ -22,108 +20,174 @@
       </div>
       <div class="listings-count">
         <span class="live-dot"></span>
-        {{ cars|length }} car{{ cars|length|pluralize }} available
+        <span id="carCount">0 cars available</span>
       </div>
     </div>
 
-    <!-- GRID -->
-    {% if cars %}
-    <div class="car-grid">
-      {% for car in cars %}
-      <div class="car-card" onclick="goToDetail({{ car.id }})">
+    <div id="carGrid" class="car-grid"></div>
 
-        <!-- IMAGE -->
+    <div id="emptyState" class="empty-wrap" style="display: none;">
+      <i class="bi bi-car-front"></i>
+      <p>No listings right now. Check back soon!</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const apiUrl = "/api/buyer/cars/";
+  const detailTemplate = "{% url 'car_detail_view' 0 %}";
+  const wishlistTemplate = "{% url 'wishlist_toggle_api' 0 %}";
+  const defaultImage = "{% static 'images/default_car.jpg' %}";
+  const isAuthenticated = JSON.parse(document.getElementById("auth-data").textContent || "false");
+
+  let wishlistIds = new Set(JSON.parse(document.getElementById("wishlist-data").textContent || "[]"));
+
+  function getCookie(name) {
+    const cookieValue = `; ${document.cookie}`;
+    const parts = cookieValue.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop().split(';').shift();
+    }
+    return "";
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function goToDetail(carId) {
+    window.location.href = detailTemplate.replace("0", carId);
+  }
+
+  function showLoginPopup() {
+    alert("For wishlist you have to login fast");
+  }
+
+  function renderCars(cars) {
+    const grid = document.getElementById("carGrid");
+    const emptyState = document.getElementById("emptyState");
+    const countEl = document.getElementById("carCount");
+
+    countEl.textContent = `${cars.length} car${cars.length === 1 ? "" : "s"} available`;
+
+    if (!cars.length) {
+      grid.innerHTML = "";
+      emptyState.style.display = "block";
+      return;
+    }
+
+    emptyState.style.display = "none";
+
+    grid.innerHTML = cars.map((car) => {
+      const firstImage = car.images && car.images.length ? car.images[0].car_image : "";
+      const imageSrc = firstImage || defaultImage;
+      const isWishlisted = wishlistIds.has(car.id);
+
+      return `
+      <div class="car-card" onclick="goToDetail(${car.id})">
         <div class="card-img-wrap">
-
-          {% with car.images.all|first as first_image %}
-            {% if first_image and first_image.car_image %}
-              <img src="{{ first_image.car_image.url }}" alt="{{ car.brand }} {{ car.car_model }}">
-            {% else %}
-              <img src="{% static 'images/default_car.jpg' %}" alt="No Image">
-            {% endif %}
-          {% endwith %}
-
+          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(car.brand)} ${escapeHtml(car.car_model)}">
           <div class="img-overlay"></div>
           <div class="view-pill">View Details &rarr;</div>
 
-          
-          <!-- WISHLIST -->
-          {% if not car.is_sold %}
           <div class="wishlist-wrap">
-            <form action="{% url 'add_remove_wish' car.id %}" method="POST" onclick="event.stopPropagation();">
-              {% csrf_token %}
-              <button type="submit" class="wishlist-btn" aria-label="Wishlist">
-                {% if car.id in wishlist_car_ids %}
-                <i class="bi bi-heart-fill heart-icon"></i>
-                {% else %}
-                <i class="bi bi-heart heart-icon"></i>
-                {% endif %}
-              </button>
-            </form>
+            <button type="button" class="wishlist-btn" data-car-id="${car.id}" aria-label="Wishlist" onclick="event.stopPropagation(); toggleWishlist(${car.id}, this)">
+              <i class="bi ${isWishlisted ? "bi-heart-fill" : "bi-heart"} heart-icon"></i>
+            </button>
           </div>
-          {% else %}
-            <span class="badge-sold">Sold</span>
-          {% endif %}
-
         </div>
 
-        <!-- BODY -->
         <div class="card-body-inner">
-
           <span class="verified-tag">
             <i class="bi bi-patch-check-fill"></i> Car Lelo Verified
           </span>
 
           <div class="car-title">
-            {{ car.year }} {{ car.brand }} {{ car.car_model }} {{ car.variant }}
+            ${escapeHtml(car.year)} ${escapeHtml(car.brand)} ${escapeHtml(car.car_model)} ${escapeHtml(car.variant || "")}
           </div>
 
           <div class="specs-row">
-            <span class="spec-chip"><i class="bi bi-speedometer2"></i> {{ car.kilometers }} km</span>
-            <span class="spec-chip"><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
+            <span class="spec-chip"><i class="bi bi-speedometer2"></i> ${escapeHtml(car.kilometers)}</span>
+            <span class="spec-chip"><i class="bi bi-fuel-pump"></i> ${escapeHtml(car.fuel_type)}</span>
           </div>
 
           <div class="card-sep"></div>
 
           <div class="card-foot">
-            <div class="price-val">₹ {{ car.price }}</div>
+            <div class="price-val">Rs. ${escapeHtml(car.price)}</div>
             <div class="location-tag">
-              <i class="bi bi-geo-alt-fill"></i> {{ car.car_location }}
+              <i class="bi bi-geo-alt-fill"></i> ${escapeHtml(car.car_location || "")}
             </div>
           </div>
-
         </div>
-      </div>
-      {% endfor %}
-    </div>
-
-    {% else %}
-    <div class="empty-wrap">
-      <i class="bi bi-car-front"></i>
-      <p>No listings right now. Check back soon!</p>
-    </div>
-    {% endif %}
-
-  </div>
-</div>
-
-<script>
-  function goToDetail(carId) {
-    var url = "{% url 'car_detail_view' 0 %}".replace('0', carId);
-    window.location.href = url;
+      </div>`;
+    }).join("");
   }
 
-  document.addEventListener('click', function(e) {
-    var icon = e.target.closest('.heart-icon');
-    if (icon) {
-      icon.classList.remove('heart-pop');
-      void icon.offsetWidth;
-      icon.classList.add('heart-pop');
-      icon.addEventListener('animationend', function() {
-        icon.classList.remove('heart-pop');
-      }, { once: true });
+  async function toggleWishlist(carId, buttonEl) {
+    if (!isAuthenticated) {
+      showLoginPopup();
+      return;
     }
-  });
+
+    try {
+      const res = await fetch(wishlistTemplate.replace("0", carId), {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        credentials: "same-origin",
+      });
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          showLoginPopup();
+        }
+        return;
+      }
+
+      const data = await res.json();
+      const icon = buttonEl.querySelector(".heart-icon");
+      if (data.wished) {
+        wishlistIds.add(carId);
+        icon.classList.remove("bi-heart");
+        icon.classList.add("bi-heart-fill");
+      } else {
+        wishlistIds.delete(carId);
+        icon.classList.remove("bi-heart-fill");
+        icon.classList.add("bi-heart");
+      }
+
+      icon.classList.remove("heart-pop");
+      void icon.offsetWidth;
+      icon.classList.add("heart-pop");
+    } catch (error) {
+      console.error("Wishlist toggle failed", error);
+    }
+  }
+
+  async function loadCars() {
+    try {
+      const response = await fetch(apiUrl, { credentials: "same-origin" });
+      if (!response.ok) {
+        throw new Error("Failed to load cars");
+      }
+      const cars = await response.json();
+      renderCars(cars);
+    } catch (error) {
+      console.error(error);
+      document.getElementById("carGrid").innerHTML = "";
+      document.getElementById("emptyState").style.display = "block";
+      document.getElementById("carCount").textContent = "0 cars available";
+    }
+  }
+
+  loadCars();
 </script>
 
 {% endblock %}
