@@ -1,10 +1,11 @@
 from django.urls import path
 from . import views
+from buyer import views as buyer_views
 
 urlpatterns = [
-    path('', views.seller, name='seller'),
+    path('',buyer_views.buyer,name = 'buyer'),
     path('car_details/', views.car_details, name='car_details'),
-    
+    path('sell-car-flow/', views.sell_car_api_flow, name='sell_car_api_flow'),
     #Dashboard
     path('dashboard/overal_view/', views.dashboard, name='dashboard'),
     path('dashboard/sold_car_view/', views.sold_car_view, name='sold_car_view'),

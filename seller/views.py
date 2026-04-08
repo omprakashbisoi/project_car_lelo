@@ -1,6 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CarDetailForm,ImageUploadForm,LocationForm
-from .models import CarDetail,ImageStore
+from .models import (
+    BRAND_CHOICES,
+    FUEL_CHOICES,
+    KILOMETER_CHOICES,
+    STATE_CHOICES,
+    YEAR_CHOICES,
+    CarDetail,
+    ImageStore,
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from location.utils import get_lat_lon
@@ -17,6 +25,17 @@ def seller(request):
         'cars':cars,
     }
     return render(request,'seller/seller.html',context)
+
+@login_required
+def sell_car_api_flow(request):
+    context = {
+        "brand_choices": BRAND_CHOICES,
+        "fuel_choices": FUEL_CHOICES,
+        "year_choices": YEAR_CHOICES,
+        "kilometer_choices": KILOMETER_CHOICES,
+        "state_choices": STATE_CHOICES,
+    }
+    return render(request, "seller/sell_car_api_flow.html", context)
 
 
 @login_required
@@ -174,7 +193,7 @@ def image_upload(request, car_id):
             ).first()
 
             if exist_img:
-                exist_img.image.delete(save=False)
+                exist_img.car_image.delete(save=False)
                 exist_img.delete()
 
             image_obj = form.save(commit=False)

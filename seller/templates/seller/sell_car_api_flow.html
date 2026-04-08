@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 760px; margin: 20px auto; padding: 12px;">
+  <h3>Sell Car (API Flow)</h3>
+  <p id="flowStatus">Step 1: Fill car details</p>
+
+  <div id="step1" style="border: 1px solid #ddd; padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+    <h4>Step 1 - Car Details</h4>
+    <form id="carForm">
+      <label>Brand</label>
+      <select name="brand" required>
+        {% for value, label in brand_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Model</label>
+      <input type="text" name="car_model" required>
+
+      <label>Variant</label>
+      <input type="text" name="variant">
+
+      <label>Year</label>
+      <select name="year" required>
+        {% for value, label in year_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Fuel Type</label>
+      <select name="fuel_type" required>
+        {% for value, label in fuel_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Kilometers</label>
+      <select name="kilometers" required>
+        {% for value, label in kilometer_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Registration State</label>
+      <select name="reg_state" required>
+        {% for value, label in state_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Price</label>
+      <input type="number" step="0.01" name="price" required>
+
+      <label>Description</label>
+      <textarea name="description" rows="3"></textarea>
+
+      <div style="margin-top: 10px;">
+        <button type="submit">Save Car Details</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="step2" style="display: none; border: 1px solid #ddd; padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+    <h4>Step 2 - Car Location</h4>
+    <form id="locationForm">
+      <label>City</label>
+      <input type="text" name="city" required>
+
+      <label>State</label>
+      <input type="text" name="state" required>
+
+      <label>Pin</label>
+      <input type="text" name="pin" maxlength="6" required>
+
+      <label>Address</label>
+      <input type="text" name="address">
+
+      <div style="margin-top: 10px;">
+        <button type="submit">Save Location</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="step3" style="display: none; border: 1px solid #ddd; padding: 14px; border-radius: 8px;">
+    <h4>Step 3 - Upload Car Images</h4>
+    <form id="imageForm" enctype="multipart/form-data">
+      <label>Image Type</label>
+      <select name="img_type" required>
+        <option value="front">Front</option>
+        <option value="back">Back</option>
+        <option value="side">Side</option>
+        <option value="interior">Interior</option>
+        <option value="engine">Engine</option>
+      </select>
+
+      <label>Car Image</label>
+      <input type="file" name="car_image" accept="image/*" required>
+
+      <div style="margin-top: 10px;">
+        <button type="submit">Upload Image</button>
+      </div>
+    </form>
+    <p style="margin-top: 8px;">You can upload multiple image types one by one.</p>
+  </div>
+
+  <p id="errorBox" style="color: #b42318; margin-top: 10px;"></p>
+  <p id="successBox" style="color: #027a48; margin-top: 10px;"></p>
+</div>
+
+<script>
+  let createdCarId = null;
+
+  function getCookie(name) {
+    const cookieValue = `; ${document.cookie}`;
+    const parts = cookieValue.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop().split(";").shift();
+    }
+    return "";
+  }
+
+  function showError(message) {
+    document.getElementById("errorBox").textContent = message || "Something went wrong.";
+  }
+
+  function showSuccess(message) {
+    document.getElementById("successBox").textContent = message || "";
+  }
+
+  function clearMessages() {
+    document.getElementById("errorBox").textContent = "";
+    document.getElementById("successBox").textContent = "";
+  }
+
+  document.getElementById("carForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessages();
+
+    const formData = new FormData(event.target);
+
+    try {
+      const response = await fetch("/api/seller/sell-car/", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        credentials: "same-origin",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(JSON.stringify(data));
+        return;
+      }
+
+      createdCarId = data.id;
+      document.getElementById("step2").style.display = "block";
+      document.getElementById("flowStatus").textContent = "Step 2: Add location";
+      showSuccess("Car details saved.");
+    } catch (error) {
+      showError("Failed to save car details.");
+    }
+  });
+
+  document.getElementById("locationForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessages();
+
+    if (!createdCarId) {
+      showError("Please complete Step 1 first.");
+      return;
+    }
+
+    const formData = new FormData(event.target);
+
+    try {
+      const response = await fetch(`/api/seller/location/${createdCarId}/`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        credentials: "same-origin",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(JSON.stringify(data));
+        return;
+      }
+
+      document.getElementById("step3").style.display = "block";
+      document.getElementById("flowStatus").textContent = "Step 3: Upload car images";
+      showSuccess("Location saved.");
+    } catch (error) {
+      showError("Failed to save location.");
+    }
+  });
+
+  document.getElementById("imageForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessages();
+
+    if (!createdCarId) {
+      showError("Please complete Step 1 first.");
+      return;
+    }
+
+    const formData = new FormData(event.target);
+
+    try {
+      const response = await fetch(`/api/seller/sell-car/image-upload/${createdCarId}/`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        credentials: "same-origin",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(JSON.stringify(data));
+        return;
+      }
+
+      showSuccess("Image uploaded successfully.");
+      event.target.reset();
+    } catch (error) {
+      showError("Failed to upload image.");
+    }
+  });
+</script>
+{% endblock %}
