@@ -3,12 +3,15 @@ from seller.api.serializers import (
     ImageUploadSerializer,
     LocationSerializer,
     SellCarCreateSerializer,
+    SellerDashboardCarSerializer,
+    SellerDashboardImagesSerializer,
 )
-from seller.models import CarDetail
+from seller.models import CarDetail, ImageStore
 from rest_framework import generics, status
-from rest_framework.permissions import  IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 
 class SellCarDetailAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -50,10 +53,12 @@ class LocationAPIView(APIView):
                 )
 
         return Response(LocationSerializer(location).data, status=status.HTTP_201_CREATED)
-    
+
+
 class ImageUploadAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ImageUploadSerializer
+
     def post(self, request, *args, **kwargs):
         car_id = self.kwargs.get("car_id")
 
@@ -67,7 +72,65 @@ class ImageUploadAPIView(generics.CreateAPIView):
         exist_image = car.images.filter(img_type=request.data.get("img_type")).first()
         if exist_image:
             exist_image.car_image.delete(save=False)
-            exist_image.delete() 
+            exist_image.delete()
         image_serializer.save(car=car)
 
         return Response(image_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class SellerDashboardCarListAPIView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SellerDashboardCarSerializer
+
+    def get_queryset(self):
+        return CarDetail.objects.filter(seller=self.request.user).select_related("car_location").order_by("-id")
+
+
+class SellerDashboardCarAPIView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SellerDashboardCarSerializer
+
+    def get_queryset(self):
+        return CarDetail.objects.filter(seller=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        car = self.get_object()
+        car.images.all().delete()
+        car.delete()
+        return Response({"detail": "Car deleted successfully."}, status=status.HTTP_200_OK)
+
+
+class SellerDashboardCarAvailableAPIView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SellerDashboardCarSerializer
+
+    def get_queryset(self):
+        return CarDetail.objects.filter(seller=self.request.user)
+
+    def patch(self, request, *args, **kwargs):
+        car = self.get_object()
+        car.is_available = not car.is_available
+        car.save(update_fields=["is_available"])
+        return Response({"is_available": car.is_available, "detail": "Car availability updated successfully."}, status=status.HTTP_200_OK)
+
+
+class SellerDashboardImageListAPIView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SellerDashboardImagesSerializer
+
+    def get_queryset(self):
+        return ImageStore.objects.filter(car__seller=self.request.user).select_related("car").order_by("-id")
+
+
+class SellerDashboardImageAPIView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SellerDashboardImagesSerializer
+
+    def get_queryset(self):
+        return ImageStore.objects.filter(car__seller=self.request.user).select_related("car")
+
+    def destroy(self, request, *args, **kwargs):
+        image = self.get_object()
+        image.car_image.delete(save=False)
+        image.delete()
+        return Response({"detail": "Image deleted successfully."}, status=status.HTTP_200_OK)
