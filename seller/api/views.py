@@ -11,6 +11,8 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import viewsets
+from rest_framework.decorators import action
 
 
 class SellCarDetailAPIView(generics.CreateAPIView):
@@ -86,9 +88,10 @@ class SellerDashboardCarListAPIView(generics.ListAPIView):
         return CarDetail.objects.filter(seller=self.request.user).select_related("car_location").order_by("-id")
 
 
-class SellerDashboardCarAPIView(generics.RetrieveUpdateDestroyAPIView):
+class SellerDashboardCarViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SellerDashboardCarSerializer
+    http_method_names = ["get", "put", "patch", "delete", "head", "options"]
 
     def get_queryset(self):
         return CarDetail.objects.filter(seller=self.request.user)
@@ -99,20 +102,15 @@ class SellerDashboardCarAPIView(generics.RetrieveUpdateDestroyAPIView):
         car.delete()
         return Response({"detail": "Car deleted successfully."}, status=status.HTTP_200_OK)
 
-
-class SellerDashboardCarAvailableAPIView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = SellerDashboardCarSerializer
-
-    def get_queryset(self):
-        return CarDetail.objects.filter(seller=self.request.user)
-
-    def patch(self, request, *args, **kwargs):
+    @action(detail=True, methods=["patch"], url_path="toggle-availability")
+    def toggle_availability(self, request, pk=None):
         car = self.get_object()
         car.is_available = not car.is_available
         car.save(update_fields=["is_available"])
-        return Response({"is_available": car.is_available, "detail": "Car availability updated successfully."}, status=status.HTTP_200_OK)
-
+        return Response(
+            {"is_available": car.is_available, "detail": "Car availability updated successfully."},
+            status=status.HTTP_200_OK,
+        )
 
 class SellerDashboardImageListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -122,9 +120,10 @@ class SellerDashboardImageListAPIView(generics.ListAPIView):
         return ImageStore.objects.filter(car__seller=self.request.user).select_related("car").order_by("-id")
 
 
-class SellerDashboardImageAPIView(generics.RetrieveUpdateDestroyAPIView):
+class SellerDashboardImageViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SellerDashboardImagesSerializer
+    http_method_names = ["get", "put", "patch", "delete", "head", "options"]
 
     def get_queryset(self):
         return ImageStore.objects.filter(car__seller=self.request.user).select_related("car")
