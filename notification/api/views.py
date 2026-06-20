@@ -179,18 +179,6 @@ class NotificationActionAPIView(generics.GenericAPIView):
                         is_read=False
                     )
 
-                    Notification.objects.create(
-                        buyer=notif.buyer,
-                        seller=notif.seller,
-                        car=notif.car,
-                        parent_request=notif,
-                        request_type="sell_confirmation",
-                        status=None,
-                        message=seller_msg,
-                        visible_to="seller",
-                        is_read=False
-                    )
-
                 else:
                     Notification.objects.create(
                         buyer=notif.buyer,

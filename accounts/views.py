@@ -149,7 +149,6 @@ def email_verify_otp(request):
                     'form': form,
                     'error': "Invalid OTP"
                 })
-
             otp_obj.is_verified = True
             otp_obj.save()
 

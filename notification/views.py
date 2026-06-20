@@ -7,7 +7,6 @@ from seller.models import CarDetail
 from .models import Notification
 from orders.models import Order
 
-
 @login_required
 def contact_request(request, car_id):
     car = get_object_or_404(CarDetail, id=car_id)
@@ -35,7 +34,6 @@ def contact_request(request, car_id):
 
     return redirect('notification:base_notifications')
 
-
 @login_required
 def buy_request(request, car_id):
     car = get_object_or_404(CarDetail, id=car_id)
@@ -62,7 +60,6 @@ def buy_request(request, car_id):
         )
 
     return redirect('notification:base_notifications')
-
 
 @login_required
 def handle_request_action(request, req_id, action):
@@ -142,7 +139,6 @@ def handle_request_action(request, req_id, action):
 
     return redirect('notification:base_notifications')
 
-
 @login_required
 def base_notifications(request):
 
@@ -169,9 +165,9 @@ def base_notifications(request):
         'buy_request_car_ids': buy_request_car_ids,
     })
 
-
 @login_required
 def mark_as_read(request):
+
     if request.method == 'POST':
         Notification.objects.filter(
             Q(buyer=request.user, visible_to='buyer') |

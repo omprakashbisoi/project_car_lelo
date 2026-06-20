@@ -66,8 +66,6 @@ class CustomUser(AbstractUser):
 
     REQUIRED_FIELDS = ['email', 'phone']
 
-    def __str__(self):
-        return self.username
     def save(self, *args, **kwargs):
 
         if self.profile_image and not self.profile_image.name.endswith(".webp"):
@@ -106,8 +104,9 @@ class CustomUser(AbstractUser):
             img.close()
 
         super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.user.username
+        return self.username
 
 
 class EmailOTP(models.Model):

@@ -2,8 +2,8 @@ from seller.models import CarDetail, ImageStore
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from wishlist.models import Wishlist
-# Create your views here.
 
+# Create your views here.
 def buyer(request):
     wishlist_car_ids = []
     if request.user.is_authenticated:
@@ -14,7 +14,6 @@ def buyer(request):
 
     context = {
         'wishlist_car_ids': wishlist_car_ids,
-        'is_user_authenticated': request.user.is_authenticated,
     }
     return render(request, "buyer/car_showcase.html", context)
 

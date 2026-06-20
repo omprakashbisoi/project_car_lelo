@@ -1,14 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CarDetailForm,ImageUploadForm,LocationForm
-from .models import (
-    BRAND_CHOICES,
-    FUEL_CHOICES,
-    KILOMETER_CHOICES,
-    STATE_CHOICES,
-    YEAR_CHOICES,
-    CarDetail,
-    ImageStore,
-)
+from .models import CarDetail,ImageStore
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from location.utils import get_lat_lon
@@ -18,24 +10,24 @@ from django.db.models.functions import ACos, Cos, Sin, Radians
 from django.http import JsonResponse
 
 # Create your views here.
-@login_required
-def seller(request):
-    cars = CarDetail.objects.filter(seller=request.user)
-    context = {
-        'cars':cars,
-    }
-    return render(request,'seller/seller.html',context)
 
 @login_required
 def sell_car_api_flow(request):
+    """Render the sell car API flow page with necessary choices"""
+    brand_choices = CarDetail.BRAND_CHOICES
+    year_choices = [(y, str(y)) for y in range(2000, 2026)]
+    fuel_choices = CarDetail.FUEL_TYPE_CHOICES
+    kilometer_choices = CarDetail.KILOMETER_CHOICES
+    state_choices = [('AN', 'Andaman and Nicobar'), ('AP', 'Andhra Pradesh'), ('AR', 'Arunachal Pradesh'), ('AS', 'Assam'), ('BR', 'Bihar'), ('CG', 'Chhattisgarh'), ('CH', 'Chandigarh'), ('CT', 'Chhattisgarh'), ('DD', 'Daman and Diu'), ('DL', 'Delhi'), ('DN', 'Dadra and Nagar Haveli'), ('GA', 'Goa'), ('GJ', 'Gujarat'), ('HR', 'Haryana'), ('HP', 'Himachal Pradesh'), ('JK', 'Jammu and Kashmir'), ('JH', 'Jharkhand'), ('KA', 'Karnataka'), ('KL', 'Kerala'), ('LA', 'Ladakh'), ('LD', 'Lakshadweep'), ('MP', 'Madhya Pradesh'), ('MH', 'Maharashtra'), ('MN', 'Manipur'), ('ML', 'Meghalaya'), ('MZ', 'Mizoram'), ('NL', 'Nagaland'), ('OR', 'Odisha'), ('PB', 'Punjab'), ('PY', 'Puducherry'), ('RJ', 'Rajasthan'), ('SK', 'Sikkim'), ('TG', 'Telangana'), ('TR', 'Tripura'), ('UP', 'Uttar Pradesh'), ('UK', 'Uttarakhand'), ('WB', 'West Bengal')]
+    
     context = {
-        "brand_choices": BRAND_CHOICES,
-        "fuel_choices": FUEL_CHOICES,
-        "year_choices": YEAR_CHOICES,
-        "kilometer_choices": KILOMETER_CHOICES,
-        "state_choices": STATE_CHOICES,
+        'brand_choices': brand_choices,
+        'year_choices': year_choices,
+        'fuel_choices': fuel_choices,
+        'kilometer_choices': kilometer_choices,
+        'state_choices': state_choices,
     }
-    return render(request, "seller/sell_car_api_flow.html", context)
+    return render(request, 'seller/sell_car_api_flow.html', context)
 
 
 @login_required
@@ -65,7 +57,7 @@ def car_details(request):
 
                 location.save()
 
-                    # ---- CAR ----
+                # ---- CAR ----
                 car = car_form.save(commit=False)
                 car.seller = request.user
                 car.car_location = location
@@ -76,7 +68,6 @@ def car_details(request):
                 return redirect('image_upload', car_id=car.id)
 
             except Exception as e:
-                print("Error:", e)
                 messages.error(request, "Something went wrong. Try again.")
 
     else:
@@ -193,7 +184,7 @@ def image_upload(request, car_id):
             ).first()
 
             if exist_img:
-                exist_img.car_image.delete(save=False)
+                exist_img.image.delete(save=False)
                 exist_img.delete()
 
             image_obj = form.save(commit=False)
@@ -312,3 +303,4 @@ def nearby_cars(request):
     ).order_by('distance')
 
     return render(request, "seller/nearby_cars.html", {"cars": cars})
+

@@ -24,24 +24,25 @@ VISIBLE_TO_CHOICES = [
     ('both', 'Both'),
 ]
 
-
 class Notification(models.Model):
+
     buyer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='sent_notifications'
     )
+
     seller = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='received_notifications'
     )
+    
     car = models.ForeignKey(
         CarDetail,
         on_delete=models.CASCADE,
         related_name='notifications'
     )
-
     parent_request = models.ForeignKey(
         'self',
         null=True,
@@ -49,7 +50,6 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
         related_name='responses'
     )
-
     request_type = models.CharField(max_length=50, choices=REQUEST_TYPE)
     status = models.CharField(
         max_length=10,
@@ -57,16 +57,13 @@ class Notification(models.Model):
         null=True,
         blank=True,
     )
-
     message = models.TextField(blank=True, null=True)
     is_read = models.BooleanField(default=False)
-
     visible_to = models.CharField(
         max_length=10,
         choices=VISIBLE_TO_CHOICES,
         default='both'
     )
-
     action_taken_by = models.ForeignKey(
         User,
         null=True,
@@ -74,7 +71,6 @@ class Notification(models.Model):
         on_delete=models.SET_NULL,
         related_name='notification_actions'
     )
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
