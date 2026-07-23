@@ -1,19 +1,20 @@
-# Car Lelo - Complete API Documentation
+﻿# Car Lelo - Complete API Documentation
 
 **Base URL:** `http://localhost:8000/api/`
 
 ---
 
-## 📋 Table of Contents
+## ðŸ“‹ Table of Contents
 1. [Account API](#account-api)
 2. [Seller API](#seller-api)
 3. [Buyer API](#buyer-api)
 4. [Wishlist API](#wishlist-api)
-5. [Notification API](#notification-api)
+5. [Orders API](#orders-api)
+6. [Notification API](#notification-api)
 
 ---
 
-## 🔐 Account API
+## ðŸ” Account API
 **Base Path:** `/api/account/`
 
 ### 1. Register Email
@@ -123,7 +124,7 @@
 
 ---
 
-## 🚗 Seller API
+## ðŸš— Seller API
 **Base Path:** `/api/seller/`
 
 ### 1. Sell Car
@@ -230,7 +231,7 @@
 
 ---
 
-## 🛒 Buyer API
+## ðŸ›’ Buyer API
 **Base Path:** `/api/buyer/`
 
 ### 1. Get All Cars
@@ -241,13 +242,23 @@
   - page: Page number
   - search: Search term
   - ordering: Order by field
+  - brand: Exact brand filter
+  - fuel_type: Exact fuel type filter
+  - reg_state: Exact registration state filter
+  - year: Exact year filter
   ```
 - **Response:** List of all available cars
 - **Status Code:** 200
 
+### 2. Get Car Detail
+- **Endpoint:** `GET /api/buyer/cars/<car_id>/`
+- **Permission:** AllowAny
+- **Response:** Single available car with location and images
+- **Status Code:** 200
+
 ---
 
-## ❤️ Wishlist API
+## â¤ï¸ Wishlist API
 **Base Path:** `/api/wishlist/`
 
 ### 1. Toggle Wishlist
@@ -264,7 +275,51 @@
 
 ---
 
-## 🔔 Notification API
+## Orders API
+**Base Path:** `/api/orders/`
+
+### 1. Get Current User Orders
+- **Endpoint:** `GET /api/orders/`
+- **Permission:** IsAuthenticated
+- **Response:** List of authenticated user's orders
+- **Status Code:** 200
+
+### 2. Get Order Detail
+- **Endpoint:** `GET /api/orders/<order_id>/`
+- **Permission:** IsAuthenticated
+- **Response:** Single authenticated user's order
+- **Status Code:** 200
+
+### 3. Get Current User Bookings
+- **Endpoint:** `GET /api/orders/bookings/`
+- **Permission:** IsAuthenticated
+- **Response:** List of authenticated user's bookings
+- **Status Code:** 200
+
+### 4. Create Booking
+- **Endpoint:** `POST /api/orders/bookings/`
+- **Permission:** IsAuthenticated
+- **Request Body:**
+  ```json
+  {
+    "car": 1,
+    "mobile": "9876543210",
+    "booking_date": "2026-08-01",
+    "booking_time": "10:30:00",
+    "message": "I want to book a test drive"
+  }
+  ```
+- **Response:** Booking created successfully
+- **Status Code:** 201
+
+### 5. Get Booking Detail
+- **Endpoint:** `GET /api/orders/bookings/<booking_id>/`
+- **Permission:** IsAuthenticated
+- **Response:** Single authenticated user's booking
+- **Status Code:** 200
+
+---
+## ðŸ”” Notification API
 **Base Path:** `/api/notification/`
 
 ### 1. Get All Notifications
@@ -320,7 +375,7 @@
 
 ---
 
-## 📝 Notification Types
+## ðŸ“ Notification Types
 
 | Type | Description |
 |------|-------------|
@@ -332,7 +387,7 @@
 
 ---
 
-## 🔐 Authentication
+## ðŸ” Authentication
 
 - **Session-based Authentication** (Django Sessions)
 - **Token Support** (DRF Token Authentication)
@@ -345,7 +400,7 @@ OR use Django session cookies for browser requests.
 
 ---
 
-## ✅ Common Response Codes
+## âœ… Common Response Codes
 
 | Code | Meaning |
 |------|---------|
@@ -359,37 +414,38 @@ OR use Django session cookies for browser requests.
 
 ---
 
-## 📦 Example Complete Flow
+## ðŸ“¦ Example Complete Flow
 
 ### 1. User Registration Flow
 ```
-POST /api/account/register/ → Get OTP
-POST /api/account/register/verify-otp/ → Verify Email
-POST /api/account/register/complete/ → Create Account
+POST /api/account/register/ â†’ Get OTP
+POST /api/account/register/verify-otp/ â†’ Verify Email
+POST /api/account/register/complete/ â†’ Create Account
 ```
 
 ### 2. Seller Car Upload Flow
 ```
-POST /api/seller/sell-car/ → Create Car
-POST /api/seller/sell-car/location/<car_id>/ → Add Location
-POST /api/seller/sell-car/image-upload/<car_id>/ → Add Images
+POST /api/seller/sell-car/ â†’ Create Car
+POST /api/seller/sell-car/location/<car_id>/ â†’ Add Location
+POST /api/seller/sell-car/image-upload/<car_id>/ â†’ Add Images
 ```
 
 ### 3. Buyer Purchase Flow
 ```
-GET /api/buyer/cars/ → Browse Cars
-POST /api/wishlist/<car_id>/ → Add to Wishlist
-POST /api/notification/create/<car_id>/buy_request/ → Send Buy Request
-POST /api/notification/action/<req_id>/accepted/ → Wait for Approval
+GET /api/buyer/cars/ â†’ Browse Cars
+POST /api/wishlist/<car_id>/ â†’ Add to Wishlist
+POST /api/notification/create/<car_id>/buy_request/ â†’ Send Buy Request
+POST /api/notification/action/<req_id>/accepted/ â†’ Wait for Approval
 ```
 
 ---
 
-## 🚀 Status
+## ðŸš€ Status
 
-✅ All API endpoints created and working
-✅ Authentication implemented
-✅ Permissions configured
-✅ Database migrations applied
+âœ… All API endpoints created and working
+âœ… Authentication implemented
+âœ… Permissions configured
+âœ… Database migrations applied
 
 Last Updated: June 20, 2026
+

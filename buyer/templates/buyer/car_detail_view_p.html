@@ -10,6 +10,9 @@
 
 
 
+{{ is_user_authenticated|json_script:"auth-data" }}
+{{ is_wishlisted|json_script:"wishlist-state" }}
+
 <div class="detail-page">
 
   <!-- BREADCRUMB -->
@@ -28,29 +31,26 @@
 
       <!-- WISHLIST -->
        {% if not car.is_sold %}
-      <form action="{% url 'add_remove_wish' car.id %}" method="POST" style="display:contents;">
-        {% csrf_token %}
-        <div class="wishlist-wrap">
-          <button class="wishlist-btn" type="submit" aria-label="Wishlist">
-            {% if is_wishlisted %}
-              <i class="bi bi-heart-fill"></i>
-            {% else %}
-              <i class="bi bi-heart"></i>
-            {% endif %}
-          </button>
-        </div>
-      </form>
+      <div class="wishlist-wrap">
+        <button class="wishlist-btn" type="button" aria-label="Wishlist" onclick="toggleWishlist()">
+          {% if is_wishlisted %}
+            <i id="wishlistIcon" class="bi bi-heart-fill"></i>
+          {% else %}
+            <i id="wishlistIcon" class="bi bi-heart"></i>
+          {% endif %}
+        </button>
+      </div>
       {% endif %}
 
       <!-- MAIN IMAGE -->
       <div class="main-img-wrap" onclick="openLightbox()">
-        {% if imgs %}
-          <img id="mainImage" src="{{ imgs.first.car_image.url }}" alt="{{ car.brand }} {{ car.car_model }}">
+        {% if first_image and first_image.car_image %}
+          <img id="mainImage" src="{{ first_image.car_image.url }}" alt="{{ car.brand }} {{ car.car_model }}">
         {% else %}
-          <img id="mainImage" src="{% static 'images/default-car.jpg' %}" alt="No Image">
+          <img id="mainImage" src="{% static 'images/car-hero.jpg' %}" alt="No Image">
         {% endif %}
         <div class="img-counter" id="imgCounter">
-          <i class="bi bi-images"></i> 1 / {{ imgs|length }}
+          <i class="bi bi-images"></i> {% if imgs %}1 / {{ imgs|length }}{% else %}0 / 0{% endif %}
         </div>
       </div>
 
@@ -108,12 +108,9 @@
             <i class="bi bi-x-circle"></i> Sold Out
           </button>
         {% else %}
-          <form method="POST" action="{% url 'notification:contact_request' car.id %}">
-            {% csrf_token %}
-            <button class="btn-contact" type="submit">
-              <i class="bi bi-telephone-fill"></i> Contact Seller
-            </button>
-          </form>
+          <button class="btn-contact" type="button" onclick="sendContactRequest()">
+            <i class="bi bi-telephone-fill"></i> Contact Seller
+          </button>
         {% endif %}
 
         <div class="seller-note">
@@ -137,6 +134,65 @@
 </div>
 
 <script>
+  const carId = {{ car.id }};
+  const isAuthenticated = JSON.parse(document.getElementById("auth-data").textContent || "false");
+  let isWishlisted = JSON.parse(document.getElementById("wishlist-state").textContent || "false");
+
+  function getCookie(name) {
+    const cookieValue = `; ${document.cookie}`;
+    const parts = cookieValue.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop().split(";").shift();
+    }
+    return "";
+  }
+
+  function requireLogin() {
+    if (!isAuthenticated) {
+      window.location.href = "{% url 'login' %}";
+      return false;
+    }
+    return true;
+  }
+
+  async function toggleWishlist() {
+    if (!requireLogin()) return;
+
+    const response = await fetch(`/api/wishlist/${carId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      credentials: "same-origin",
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    isWishlisted = data.wished;
+    const icon = document.getElementById("wishlistIcon");
+    icon.classList.toggle("bi-heart-fill", isWishlisted);
+    icon.classList.toggle("bi-heart", !isWishlisted);
+  }
+
+  async function sendContactRequest() {
+    if (!requireLogin()) return;
+
+    const response = await fetch(`/api/notification/create/${carId}/contact_request/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      credentials: "same-origin",
+      body: JSON.stringify({ message: "Interested in this car" }),
+    });
+
+    if (response.ok) {
+      window.location.href = "{% url 'notification:base_notifications' %}";
+    }
+  }
+
   // Thumbnail switch
   function changeImage(el, index, total) {
     var main = document.getElementById('mainImage');

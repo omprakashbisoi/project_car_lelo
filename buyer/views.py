@@ -14,6 +14,7 @@ def buyer(request):
 
     context = {
         'wishlist_car_ids': wishlist_car_ids,
+        'is_user_authenticated': request.user.is_authenticated,
     }
     return render(request, "buyer/car_showcase.html", context)
 
@@ -39,14 +40,20 @@ def search(request):
 
 def car_detail_view(request, car_id):
     car = get_object_or_404(CarDetail, id=car_id)
-    imgs = ImageStore.objects.filter(car=car)
+    imgs = ImageStore.objects.filter(
+        car=car,
+        car_image__isnull=False,
+    ).exclude(car_image="")
+    first_image = imgs.first()
     is_wishlisted = False
     if request.user.is_authenticated:
         is_wishlisted = Wishlist.objects.filter(user=request.user, car=car).exists()
     return render(request, 'buyer/car_detail_view_p.html', {
         "car": car,
         "imgs": imgs,
+        "first_image": first_image,
         "is_wishlisted":is_wishlisted,
+        "is_user_authenticated": request.user.is_authenticated,
     })
 
 

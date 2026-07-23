@@ -19,7 +19,19 @@ def profile_view(request):
     else:
         location = profile.location
 
-    if request.method == "POST":
+    if request.method == "POST" and "upload_image" in request.POST:
+        profile_form = ProfileUpdateForm(
+            {"phone": profile.phone},
+            request.FILES,
+            instance=profile,
+        )
+        location_form = LocationUpdateForm(instance=location)
+
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect("profile")
+
+    elif request.method == "POST":
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         location_form = LocationUpdateForm(request.POST, instance=location)
 

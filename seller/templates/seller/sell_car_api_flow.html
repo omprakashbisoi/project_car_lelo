@@ -177,7 +177,7 @@
     const formData = new FormData(event.target);
 
     try {
-      const response = await fetch(`/api/seller/location/${createdCarId}/`, {
+      const response = await fetch(`/api/seller/sell-car/location/${createdCarId}/`, {
         method: "POST",
         body: formData,
         headers: {

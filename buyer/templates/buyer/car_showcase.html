@@ -20,7 +20,7 @@
       </div>
       <div class="listings-count">
         <span class="live-dot"></span>
-        <span id="carCount">0 cars available</span>
+        <span id="carCount">0 listings</span>
       </div>
     </div>
 
@@ -37,7 +37,7 @@
   const apiUrl = "/api/buyer/cars/";
   const detailTemplate = "{% url 'car_detail_view' 0 %}";
   const wishlistTemplate = "{% url 'wishlist_toggle_api' 0 %}";
-  const defaultImage = "{% static 'images/default_car.jpg' %}";
+  const defaultImage = "{% static 'images/car-hero.jpg' %}";
   const isAuthenticated = JSON.parse(document.getElementById("auth-data").textContent || "false");
 
   let wishlistIds = new Set(JSON.parse(document.getElementById("wishlist-data").textContent || "[]"));
@@ -73,7 +73,7 @@
     const emptyState = document.getElementById("emptyState");
     const countEl = document.getElementById("carCount");
 
-    countEl.textContent = `${cars.length} car${cars.length === 1 ? "" : "s"} available`;
+    countEl.textContent = `${cars.length} listing${cars.length === 1 ? "" : "s"}`;
 
     if (!cars.length) {
       grid.innerHTML = "";
@@ -87,11 +87,13 @@
       const firstImage = car.images && car.images.length ? car.images[0].car_image : "";
       const imageSrc = firstImage || defaultImage;
       const isWishlisted = wishlistIds.has(car.id);
+      const soldBadge = car.is_sold ? '<div class="badge-sold">Sold</div>' : "";
 
       return `
       <div class="car-card" onclick="goToDetail(${car.id})">
         <div class="card-img-wrap">
           <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(car.brand)} ${escapeHtml(car.car_model)}">
+          ${soldBadge}
           <div class="img-overlay"></div>
           <div class="view-pill">View Details &rarr;</div>
 
@@ -183,7 +185,7 @@
       console.error(error);
       document.getElementById("carGrid").innerHTML = "";
       document.getElementById("emptyState").style.display = "block";
-      document.getElementById("carCount").textContent = "0 cars available";
+      document.getElementById("carCount").textContent = "0 listings";
     }
   }
 
